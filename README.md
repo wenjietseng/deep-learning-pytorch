@@ -5,8 +5,9 @@ Lab0: Neural networks with backpropagation for "XOR" using one hidden layer.
 
 * Activate virtual environment
 ```{ shell }
-python3 -m venv ~/venv-3
-python2 -m venv ~/venv-2
-source ~/venv-3/bin/activate
-run scripts
-deactivate
+$ python3 -m venv ~/venv-3
+$ python2 -m venv ~/venv-2
+$ source ~/venv-3/bin/activate
+(venv-3) $ #run scripts
+(venv-3) $ deactivate
+```
