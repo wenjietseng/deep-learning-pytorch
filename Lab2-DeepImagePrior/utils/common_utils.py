@@ -56,7 +56,7 @@ def get_image_grid(images_np, nrow=8):
     
     return torch_grid.numpy()
 
-def plot_image_grid(images_np, nrow =8, factor=1, interpolation=None):
+def plot_image_grid(images_np, nrow=8, factor=1, interpolation=None):
     """Draws images in a grid
     
     Args:
