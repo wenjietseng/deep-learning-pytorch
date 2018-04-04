@@ -2,7 +2,7 @@
 from __future__ import print_function
 import matplotlib
 # or use ssh -X
-# matplotlib.use('Agg')
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 #%matplotlib inline
 
@@ -107,7 +107,7 @@ def closure():
         plt.savefig("./out_imgs/"+ str(i) + ".png", bbox_inches="tight")
         plt.close()
 
-    training_loss_writer.writerow([i, total_loss])
+    training_loss_writer.writerow([i, total_loss.data[0]])
     i += 1
 
     return total_loss
