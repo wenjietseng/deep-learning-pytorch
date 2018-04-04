@@ -63,8 +63,8 @@ else:
 img_pil = img_noisy_pil
 img_np = img_noisy_np
     
-if PLOT:
-    plot_image_grid([img_np], 4, 5)
+#if PLOT:
+#    plot_image_grid([img_np], 4, 5)
         
 
 # --- Setup ---
