@@ -6,7 +6,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 #%matplotlib inline
 
-import os
+import sys, os
 # os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 import csv
 
@@ -31,8 +31,34 @@ fname = './images/brown-falcon.jpg'
 
 # --- Load image ---
 img_noisy_pil = crop_image(get_image(fname, imsize)[0], d=32)
-img_noisy_np = pil_to_np(img_noisy_pil)
-    
+# 1. image only
+img_noisy_np_1 = pil_to_np(img_noisy_pil)
+
+# 2. image + noise
+img_noisy_np_2 = img_noisy_np + np.random.uniform(size=img_noisy_np.shape)	
+img_noisy_np_2 = np.clip(img_noisy_np_2, 0, 1)
+
+# 3. image shuffled: random shuffle columns and rows
+img_noisy_np_3 = np.random.shuffle(img_noisy_np)
+
+# 4. noise only
+img_noisy_np_4 = np.random.uniform(size=img_noisy_np.shape)
+
+# --- Load which setup ---
+para_setup = os.system(sys.argv[1])
+img_noisy_np = None
+if para_setup == "1":
+	img_noisy_np = img_noisy_np_1
+elif para_setup == "2":
+	img_noisy_np = img_noisy_np_2
+elif para_setup == "3":
+	img_noisy_np = img_noisy_np_3
+elif para_setup == "4":
+	img_noisy_np = img_noisy_np_4
+else:
+	exit("parameter setup number fault")
+
+
 # As we don't have ground truth
 img_pil = img_noisy_pil
 img_np = img_noisy_np
@@ -65,10 +91,11 @@ net = skip(
 
 net = net.type(dtype)
 
+#print(net)
 
-    
+# net_input is z in Lab2 description
 net_input = get_noise(input_depth, INPUT, (img_pil.size[1], img_pil.size[0])).type(dtype).detach()
-
+#print(net_input)
 # Compute number of parameters
 s  = sum([np.prod(list(p.size())) for p in net.parameters()]); 
 print ('Number of params: %d' % s)
@@ -76,12 +103,13 @@ print ('Number of params: %d' % s)
 # Loss
 mse = torch.nn.MSELoss().type(dtype)
 
+# !!!!!!
 img_noisy_var = np_to_var(img_noisy_np).type(dtype)
 # --- Optimize ---
 net_input_saved = net_input.data.clone()
 noise = net_input.data.clone()
 
-training_loss_writer = csv.writer(open("./output/out1.csv", 'w'))
+training_loss_writer = csv.writer(open("./output/outi"+ para_setup +".csv", 'w'))
 
 i = 0
 def closure():
@@ -89,7 +117,7 @@ def closure():
     global i
     global training_loss_writer 
     
-
+	# add normal noise each iteration
     if reg_noise_std > 0:
         net_input.data = net_input_saved + (noise.normal_() * reg_noise_std)
     
@@ -104,7 +132,7 @@ def closure():
     if  PLOT and i % show_every == 0:
         out_np = var_to_np(out)
         plot_image_grid([np.clip(out_np, 0, 1)], factor=figsize, nrow=1)
-        plt.savefig("./out_imgs/"+ str(i) + ".png", bbox_inches="tight")
+        plt.savefig("./out_imgs/setup" + para_setup + "-" + str(i) + ".png", bbox_inches="tight")
         plt.close()
 
     training_loss_writer.writerow([i, total_loss.data[0]])
@@ -119,4 +147,6 @@ p = get_params(OPT_OVER, net, net_input)
 optimize(OPTIMIZER, p, closure, LR, num_iter)
 
 out_np = var_to_np(net(net_input))
-q = plot_image_grid([np.clip(out_np, 0, 1), img_np], factor=13)
+q = plot_image_grid([np.clip(out_np, 0, 1), img_np], factor=13) 
+plt.savefig("./out_imgs/setup" + para_setup + "-final-compare.png", bbox_inches="tight")
+plt.close()
