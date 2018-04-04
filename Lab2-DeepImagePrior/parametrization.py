@@ -27,7 +27,7 @@ imsize = -1
 PLOT = True
 sigma = 25
 sigma_ = sigma/255.
-fname = './images/brown-falcon.jpg'
+fname = './images/req1.jpg'
 
 # --- Load image ---
 img_noisy_pil = crop_image(get_image(fname, imsize)[0], d=32)
@@ -41,7 +41,7 @@ if para_setup == "1":
 elif para_setup == "2":
     # 2. image + noise
     img_noisy_np = img_noisy_np + np.random.normal(0, 1, size=img_noisy_np.shape)	
-    #img_noisy_np = np.clip(img_noisy_np, 0, 1)
+    img_noisy_np = np.clip(img_noisy_np, 0, 1)
 elif para_setup == "3":
     # 3. image shuffled: random shuffle columns and rows
     #np.random.shuffle(img_noisy_np) # only shuffled RGB
@@ -108,7 +108,7 @@ img_noisy_var = np_to_var(img_noisy_np).type(dtype)
 net_input_saved = net_input.data.clone()
 noise = net_input.data.clone()
 
-training_loss_writer = csv.writer(open("./output/2nd-out"+ para_setup +".csv", 'w'))
+training_loss_writer = csv.writer(open("./output/3rd-out"+ para_setup +".csv", 'w'))
 
 i = 0
 def closure():
@@ -131,7 +131,7 @@ def closure():
     if  PLOT and i % show_every == 0:
         out_np = var_to_np(out)
         plot_image_grid([np.clip(out_np, 0, 1)], factor=figsize, nrow=1)
-        plt.savefig("./out_imgs/2nd-setup" + para_setup + "-" + str(i) + ".png", bbox_inches="tight")
+        plt.savefig("./out_imgs/3rd-setup" + para_setup + "-" + str(i) + ".png", bbox_inches="tight")
         plt.close()
 
     training_loss_writer.writerow([i, total_loss.data[0]])
@@ -147,5 +147,5 @@ optimize(OPTIMIZER, p, closure, LR, num_iter)
 
 out_np = var_to_np(net(net_input))
 q = plot_image_grid([np.clip(out_np, 0, 1), img_np], factor=13) 
-plt.savefig("./out_imgs/setup" + para_setup + "-final-compare.png", bbox_inches="tight")
+plt.savefig("./out_imgs/3rd-setup" + para_setup + "-final-compare.png", bbox_inches="tight")
 plt.close()

@@ -4,8 +4,8 @@ import csv
 
 # training loss
 mse_1 = open('./output/outi1.csv', 'r')
-mse_2 = open('./output/outi2.csv', 'r')
-mse_3 = open('./output/outi3.csv', 'r')
+mse_2 = open('./output/2nd-out2.csv', 'r')
+mse_3 = open('./output/2nd-out3.csv', 'r')
 mse_4 = open('./output/outi4.csv', 'r')
 
 def read_table(file):
