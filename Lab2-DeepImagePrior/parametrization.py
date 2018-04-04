@@ -1,5 +1,7 @@
 # --- Import libs ---
 from __future__ import print_function
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 #%matplotlib inline
 
@@ -95,7 +97,7 @@ def closure():
     if  PLOT and i % show_every == 0:
         out_np = var_to_np(out)
         plot_image_grid([np.clip(out_np, 0, 1)], factor=figsize, nrow=1)
-        plt.savefig("./out_imgs/"+ i + ".png")
+        plt.savefig("./out_imgs/"+ str(i) + ".png")
         plt.close()
 
         
