@@ -45,7 +45,7 @@ elif para_setup == "2":
 elif para_setup == "3":
     # 3. image shuffled: random shuffle columns and rows
     #np.random.shuffle(img_noisy_np) # only shuffled RGB
-    col, ch = img_noisy_np.shape[1], img_noisy_np.shape[2]
+    ch, row = img_noisy_np.shape[0], img_noisy_np.shape[1]
     for c in range(ch):
         for r in range(row):
             np.random.shuffle(img_noisy_np[c][r])
