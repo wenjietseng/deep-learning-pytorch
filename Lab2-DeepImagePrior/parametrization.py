@@ -1,12 +1,14 @@
 # --- Import libs ---
 from __future__ import print_function
 import matplotlib
-matplotlib.use('Agg')
+# or use ssh -X
+# matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 #%matplotlib inline
 
 import os
 # os.environ['CUDA_VISIBLE_DEVICES'] = '1'
+import csv
 
 import numpy as np
 from models import *
@@ -81,10 +83,11 @@ noise = net_input.data.clone()
 
 
 i = 0
-def closure():
+def closure(training_loss_writer):
     
     global i
     
+
     if reg_noise_std > 0:
         net_input.data = net_input_saved + (noise.normal_() * reg_noise_std)
     
@@ -92,21 +95,27 @@ def closure():
    
     total_loss = mse(out, img_noisy_var)
     total_loss.backward()
-        
+    
+
+
     print ('Iteration %05d    Loss %f' % (i, total_loss.data[0]), '\r', end='')
     if  PLOT and i % show_every == 0:
         out_np = var_to_np(out)
         plot_image_grid([np.clip(out_np, 0, 1)], factor=figsize, nrow=1)
-        plt.savefig("./out_imgs/"+ str(i) + ".png")
+        plt.savefig("./out_imgs/"+ str(i) + ".png", bbox_inches="tight")
         plt.close()
 
-        
+    writer.writerow([i, total_loss])
     i += 1
 
     return total_loss
 
+
+
+# main
+training_loss_writer = csv.writer(open("./output/out1.csv", 'w'))
 p = get_params(OPT_OVER, net, net_input)
-optimize(OPTIMIZER, p, closure, LR, num_iter)
+optimize(OPTIMIZER, p, closure(training_loss_writer), LR, num_iter)
 
 out_np = var_to_np(net(net_input))
 q = plot_image_grid([np.clip(out_np, 0, 1), img_np], factor=13)
