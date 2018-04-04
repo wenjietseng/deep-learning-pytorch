@@ -31,30 +31,23 @@ fname = './images/brown-falcon.jpg'
 
 # --- Load image ---
 img_noisy_pil = crop_image(get_image(fname, imsize)[0], d=32)
-# 1. image only
-img_noisy_np_1 = pil_to_np(img_noisy_pil)
-
-# 2. image + noise
-img_noisy_np_2 = img_noisy_np + np.random.uniform(size=img_noisy_np.shape)	
-img_noisy_np_2 = np.clip(img_noisy_np_2, 0, 1)
-
-# 3. image shuffled: random shuffle columns and rows
-img_noisy_np_3 = np.random.shuffle(img_noisy_np)
-
-# 4. noise only
-img_noisy_np_4 = np.random.uniform(size=img_noisy_np.shape)
 
 # --- Load which setup ---
-para_setup = os.system(sys.argv[1])
-img_noisy_np = None
+para_setup = sys.argv[1]
+img_noisy_np = pil_to_np(img_noisy_pil)
 if para_setup == "1":
-	img_noisy_np = img_noisy_np_1
+    # 1. image only
+    img_noisy_np = pil_to_np(img_noisy_pil)
 elif para_setup == "2":
-	img_noisy_np = img_noisy_np_2
+    # 2. image + noise
+    img_noisy_np = img_noisy_np + np.random.uniform(size=img_noisy_np.shape)	
+    #img_noisy_np = np.clip(img_noisy_np, 0, 1)
 elif para_setup == "3":
-	img_noisy_np = img_noisy_np_3
+    # 3. image shuffled: random shuffle columns and rows
+    np.random.shuffle(img_noisy_np)
 elif para_setup == "4":
-	img_noisy_np = img_noisy_np_4
+    # 4. noise only
+    img_noisy_np = np.random.uniform(size=img_noisy_np.shape)
 else:
 	exit("parameter setup number fault")
 
