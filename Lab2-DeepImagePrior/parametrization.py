@@ -81,11 +81,13 @@ img_noisy_var = np_to_var(img_noisy_np).type(dtype)
 net_input_saved = net_input.data.clone()
 noise = net_input.data.clone()
 
+training_loss_writer = csv.writer(open("./output/out1.csv", 'w'))
 
 i = 0
-def closure(training_loss_writer):
+def closure():
     
     global i
+    global training_loss_writer 
     
 
     if reg_noise_std > 0:
@@ -105,7 +107,7 @@ def closure(training_loss_writer):
         plt.savefig("./out_imgs/"+ str(i) + ".png", bbox_inches="tight")
         plt.close()
 
-    writer.writerow([i, total_loss])
+    training_loss_writer.writerow([i, total_loss])
     i += 1
 
     return total_loss
@@ -113,9 +115,8 @@ def closure(training_loss_writer):
 
 
 # main
-training_loss_writer = csv.writer(open("./output/out1.csv", 'w'))
 p = get_params(OPT_OVER, net, net_input)
-optimize(OPTIMIZER, p, closure(training_loss_writer), LR, num_iter)
+optimize(OPTIMIZER, p, closure, LR, num_iter)
 
 out_np = var_to_np(net(net_input))
 q = plot_image_grid([np.clip(out_np, 0, 1), img_np], factor=13)
