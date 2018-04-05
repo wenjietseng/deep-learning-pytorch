@@ -41,7 +41,7 @@ if para_setup == "1":
 elif para_setup == "2":
     # 2. image + noise
     img_noisy_np = img_noisy_np + np.random.normal(0., 1., size=img_noisy_np.shape)	
-    img_noisy_np = np.clip(img_noisy_np, 0., 1.)
+    img_noisy_np = np.clip(img_noisy_np, 0., 1.).astype(np.float32)
 elif para_setup == "3":
     # 3. image shuffled: random shuffle columns and rows
     #np.random.shuffle(img_noisy_np) # only shuffled RGB
