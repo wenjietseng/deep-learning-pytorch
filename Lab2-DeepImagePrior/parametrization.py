@@ -108,7 +108,7 @@ img_noisy_var = np_to_var(img_noisy_np).type(dtype)
 net_input_saved = net_input.data.clone()
 noise = net_input.data.clone()
 
-training_loss_writer = csv.writer(open("./output/3rd-out"+ para_setup +".csv", 'w'))
+training_loss_writer = csv.writer(open("./output/4th-out"+ para_setup +".csv", 'w'))
 
 i = 0
 def closure():
@@ -131,7 +131,7 @@ def closure():
     if  PLOT and i % show_every == 0:
         out_np = var_to_np(out)
         plot_image_grid([np.clip(out_np, 0, 1)], factor=figsize, nrow=1)
-        plt.savefig("./out_imgs/3rd-setup" + para_setup + "-" + str(i) + ".png", bbox_inches="tight")
+        plt.savefig("./out_imgs/4th-setup" + para_setup + "-" + str(i) + ".png", bbox_inches="tight")
         plt.close()
 
     training_loss_writer.writerow([i, total_loss.data[0]])
@@ -146,6 +146,8 @@ p = get_params(OPT_OVER, net, net_input)
 optimize(OPTIMIZER, p, closure, LR, num_iter)
 
 out_np = var_to_np(net(net_input))
+print(type(np.clip(out_np,0,1)))
+print(type(img_np))
 q = plot_image_grid([np.clip(out_np, 0, 1), img_np], factor=13) 
-plt.savefig("./out_imgs/3rd-setup" + para_setup + "-final-compare.png", bbox_inches="tight")
+plt.savefig("./out_imgs/4th-setup" + para_setup + "-final-compare.png", bbox_inches="tight")
 plt.close()
