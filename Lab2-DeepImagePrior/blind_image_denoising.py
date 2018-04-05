@@ -11,6 +11,7 @@ import torch.optim
 
 from torch.autograd import Variable
 from utils.denoising_utils import *
+from skimage.measure import compare_psnr
 
 torch.backends.cudnn.enabled = True
 torch.backends.cudnn.benchmark = True
