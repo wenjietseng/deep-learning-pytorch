@@ -78,7 +78,7 @@ show_every = 500
 
 if fname == './images/noise_image.png':
     num_iter = 1800
-    input_depth = 3
+    input_depth = 32
     figsize = 5 
     
     net = skip(
