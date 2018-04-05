@@ -31,30 +31,31 @@ ground_truth = "./images/noise_GT.png"
 img_GT_pil = crop_image(get_image(ground_truth, imsize)[0], d=32)
 img_GT_np = pil_to_np(img_GT_pil)
 
-fname = './images/noise_image.png'
+# fname = './images/noise_image.png'
+# # set ground truth
+# img_pil = img_GT_pil
+# img_np = img_GT_np
 
-# if fname == './images/noise_image.png':
-img_noisy_pil = crop_image(get_image(fname, imsize)[0], d=32)
-img_noisy_np = pil_to_np(img_noisy_pil)
+fname = './images/noise_GT.png'
+if fname == './images/noise_image.png':
+    img_noisy_pil = crop_image(get_image(fname, imsize)[0], d=32)
+    img_noisy_np = pil_to_np(img_noisy_pil)
     
-# set ground truth
-img_pil = img_GT_pil
-img_np = img_GT_np
     
-if PLOT:
-    plot_image_grid([img_np], 4, 5) # perhaps need to change 4, 5
+    if PLOT:
+        plot_image_grid([img_np], 4, 5) # perhaps need to change 4, 5
         
-# elif fname == 'data/denoising/F16_GT.png':
-#     # Add synthetic noise 
-#     img_pil = crop_image(get_image(fname, imsize)[0], d=32)
-#     img_np = pil_to_np(img_pil)
+elif fname == 'data/noise_GT.png':
+    # Add synthetic noise 
+    img_pil = crop_image(get_image(fname, imsize)[0], d=32)
+    img_np = pil_to_np(img_pil)
     
-#     img_noisy_pil, img_noisy_np = get_noisy_image(img_np, sigma_)
+    img_noisy_pil, img_noisy_np = get_noisy_image(img_np, sigma_)
     
-#     if PLOT:
-#         plot_image_grid([img_np, img_noisy_np], 4, 6)
-# else:
-#     assert False
+    if PLOT:
+        plot_image_grid([img_np, img_noisy_np], 4, 6)
+else:
+    assert False
 
 # --- Setup ---
 INPUT = 'noise' # 'meshgrid'
@@ -82,17 +83,17 @@ if fname == './images/noise_image.png':
 
     net = net.type(dtype)
 
-# elif fname == 'data/denoising/F16_GT.png':
-#     num_iter = 3000
-#     input_depth = 32 
-#     figsize = 4 
+elif fname == 'data/denoising/F16_GT.png':
+    num_iter = 1800
+    input_depth = 32 
+    figsize = 4 
     
-#     net = get_net(input_depth, 'skip', pad,
-#                   skip_n33d=128, 
-#                   skip_n33u=128, 
-#                   skip_n11=4, 
-#                   num_scales=5,
-#                   upsample_mode='bilinear').type(dtype)
+    net = get_net(input_depth, 'skip', pad,
+                  skip_n33d=128, 
+                  skip_n33u=128, 
+                  skip_n11=4, 
+                  num_scales=5,
+                  upsample_mode='bilinear').type(dtype)
 
 else:
     assert False
@@ -138,6 +139,8 @@ p = get_params(OPT_OVER, net, net_input)
 optimize(OPTIMIZER, p, closure, LR, num_iter)
 out_np = var_to_np(net(net_input))
 
-psnr = compare_psnr(img_GT_np, out_np)
+# psnr = compare_psnr(img_GT_np, out_np)
+psnr = compare_psnr(img_np, out_np)
+print('---')
 print(psnr)
 q = plot_image_grid([np.clip(out_np, 0, 1), img_np], factor=13)
