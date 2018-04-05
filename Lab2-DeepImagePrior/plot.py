@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import csv
 
+# --- requirment 1 ---
 # training loss
 mse_1 = open('./output/3rd-out1.csv', 'r')
 mse_2 = open('./output/3rd-out2.csv', 'r')
@@ -39,3 +40,6 @@ plt.ylabel('MSE')
 plt.savefig("requirement1.png", dpi=300, bbox_inches='tight')
 plt.close()
 
+
+# --- requirment 2 ---
+# --- requirment 3 ---
