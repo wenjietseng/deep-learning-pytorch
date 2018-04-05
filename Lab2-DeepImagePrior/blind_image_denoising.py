@@ -27,18 +27,22 @@ sigma = 25
 sigma_ = sigma / 255
 
 # --- Load Image ---
+ground_truth = "./images/noise_GT.png"
+img_GT_pil = crop_image(get_image(ground_truth, imsize)[0], d=32)
+img_GT_np = pil_to_np(img_GT_pil)
+
 fname = './images/noise_image.png'
 
-if fname == './images/noise_image.png':
-    img_noisy_pil = crop_image(get_image(fname, imsize)[0], d=32)
-    img_noisy_np = pil_to_np(img_noisy_pil)
+# if fname == './images/noise_image.png':
+img_noisy_pil = crop_image(get_image(fname, imsize)[0], d=32)
+img_noisy_np = pil_to_np(img_noisy_pil)
     
-    # As we don't have ground truth
-    img_pil = img_noisy_pil
-    img_np = img_noisy_np
+# set ground truth
+img_pil = img_GT_pil
+img_np = img_GT_np
     
-    if PLOT:
-        plot_image_grid([img_np], 4, 5) # perhaps need to change 4, 5
+if PLOT:
+    plot_image_grid([img_np], 4, 5) # perhaps need to change 4, 5
         
 # elif fname == 'data/denoising/F16_GT.png':
 #     # Add synthetic noise 
@@ -49,8 +53,8 @@ if fname == './images/noise_image.png':
     
 #     if PLOT:
 #         plot_image_grid([img_np, img_noisy_np], 4, 6)
-else:
-    assert False
+# else:
+#     assert False
 
 # --- Setup ---
 INPUT = 'noise' # 'meshgrid'
@@ -133,4 +137,7 @@ def closure():
 p = get_params(OPT_OVER, net, net_input)
 optimize(OPTIMIZER, p, closure, LR, num_iter)
 out_np = var_to_np(net(net_input))
+
+psnr = compare_psnr(img_GT_np, out_np)
+print(psnr)
 q = plot_image_grid([np.clip(out_np, 0, 1), img_np], factor=13)
