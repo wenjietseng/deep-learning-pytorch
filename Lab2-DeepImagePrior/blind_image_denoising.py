@@ -1,7 +1,11 @@
 # --- Import libs ---
 from __future__ import print_function
+# import matplotlib
+# matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-import os
+
+import sys, os
+import csv
 
 import numpy as np
 from models import *
