@@ -139,7 +139,7 @@ def closure():
         out_np = var_to_np(out)
         plot_image_grid([np.clip(out_np, 0, 1)], factor=figsize, nrow=1)
         # --- Save File ---
-        plt.savefig("./out_imgs/req2-1" + str(i) + ".png", bbox_inches="tight")
+        plt.savefig("./out_imgs/req2-" + time + "-" + str(i) + ".png", bbox_inches="tight")
         plt.close()
 
     i += 1
@@ -155,5 +155,5 @@ psnr = compare_psnr(img_np, out_np)
 print("---")
 print("The PSNR after training: %.5f" % (psnr))
 q = plot_image_grid([np.clip(out_np, 0, 1), img_np], factor=13)
-plt.savefig("./out_imgs/req2-1-final-compare.png", bbox_inches="tight")
+plt.savefig("./out_imgs/req2-" + time + "-final-compare.png", bbox_inches="tight")
 plt.close()
