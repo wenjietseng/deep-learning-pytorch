@@ -40,8 +40,8 @@ if para_setup == "1":
     img_noisy_np = pil_to_np(img_noisy_pil)
 elif para_setup == "2":
     # 2. image + noise
-    img_noisy_np = img_noisy_np + np.random.normal(0, 1, size=img_noisy_np.shape)	
-    img_noisy_np = np.clip(img_noisy_np, 0, 1)
+    img_noisy_np = img_noisy_np + np.random.normal(0., 1., size=img_noisy_np.shape)	
+    img_noisy_np = np.clip(img_noisy_np, 0., 1.)
 elif para_setup == "3":
     # 3. image shuffled: random shuffle columns and rows
     #np.random.shuffle(img_noisy_np) # only shuffled RGB
@@ -50,10 +50,10 @@ elif para_setup == "3":
         for r in range(row):
             np.random.shuffle(img_noisy_np[c][r])
         np.random.shuffle(img_noisy_np[c])
-    np.random.shuffle(img_noisy_np)
+    #np.random.shuffle(img_noisy_np)
 elif para_setup == "4":
     # 4. noise only
-    img_noisy_np = np.random.uniform(size=img_noisy_np.shape)
+    img_noisy_np = np.random.uniform(0., 1.,size=img_noisy_np.shape)
 else:
 	exit("parameter setup number fault")
 
@@ -146,6 +146,6 @@ p = get_params(OPT_OVER, net, net_input)
 optimize(OPTIMIZER, p, closure, LR, num_iter)
 
 out_np = var_to_np(net(net_input))
-q = plot_image_grid([np.clip(out_np, 0, 1), img_np], factor=13) 
+q = plot_image_grid([np.clip(out_np, 0., 1.), img_np], factor=13) 
 plt.savefig("./out_imgs/3rd-setup" + para_setup + "-final-compare.png", bbox_inches="tight")
 plt.close()
