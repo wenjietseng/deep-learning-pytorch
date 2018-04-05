@@ -26,36 +26,44 @@ PLOT = True
 sigma = 25
 sigma_ = sigma / 255
 
+time = sys.argv[1]
+if time == None:
+    exit("enter no of training!")
 # --- Load Image ---
 ground_truth = "./images/noise_GT.png"
 img_GT_pil = crop_image(get_image(ground_truth, imsize)[0], d=32)
 img_GT_np = pil_to_np(img_GT_pil)
-
-# fname = './images/noise_image.png'
-# # set ground truth
-# img_pil = img_GT_pil
-# img_np = img_GT_np
-
-fname = './images/noise_GT.png'
-if fname == './images/noise_image.png':
-    img_noisy_pil = crop_image(get_image(fname, imsize)[0], d=32)
-    img_noisy_np = pil_to_np(img_noisy_pil)
+img_pil = img_GT_pil
+img_np = img_GT_np
+# noise
+fname = './images/noise_image.png'
+img_noisy_pil = crop_image(get_image(fname, imsize)[0], d=32)
+img_noisy_np = pil_to_np(img_noisy_pil)
+plot_image_grid([img_noisy_np, img_np], factor=13) # perhaps need to change 4, 5
+plt.savefig("./out_imgs/req2-" + time + "-origin.png")
+psnr = compare_psnr(img_np, img_noisy_np)
+print("---")
+print("The PSNR before training: %.5f" % (psnr))
+# fname = './images/noise_GT.png'
+# if fname == './images/noise_image.png':
+#     img_noisy_pil = crop_image(get_image(fname, imsize)[0], d=32)
+#     img_noisy_np = pil_to_np(img_noisy_pil)
     
     
-    if PLOT:
-        plot_image_grid([img_np], 4, 5) # perhaps need to change 4, 5
+#     if PLOT:
+#         plot_image_grid([img_np], 4, 5) # perhaps need to change 4, 5
         
-elif fname == './images/noise_GT.png':
-    # Add synthetic noise 
-    img_pil = crop_image(get_image(fname, imsize)[0], d=32)
-    img_np = pil_to_np(img_pil)
+# elif fname == './images/noise_GT.png':
+#     # Add synthetic noise 
+#     img_pil = crop_image(get_image(fname, imsize)[0], d=32)
+#     img_np = pil_to_np(img_pil)
     
-    img_noisy_pil, img_noisy_np = get_noisy_image(img_np, sigma_)
+#     img_noisy_pil, img_noisy_np = get_noisy_image(img_np, sigma_)
     
-    if PLOT:
-        plot_image_grid([img_np, img_noisy_np], 4, 6)
-else:
-    assert False
+#     if PLOT:
+#         plot_image_grid([img_np, img_noisy_np], 4, 6)
+# else:
+#     assert False
 
 # --- Setup ---
 INPUT = 'noise' # 'meshgrid'
@@ -130,7 +138,10 @@ def closure():
     if  PLOT and i % show_every == 0:
         out_np = var_to_np(out)
         plot_image_grid([np.clip(out_np, 0, 1)], factor=figsize, nrow=1)
-        
+        # --- Save File ---
+        plt.savefig("./out_imgs/req2-1" + str(i) + ".png", bbox_inches="tight")
+        plt.close()
+
     i += 1
 
     return total_loss
@@ -141,6 +152,8 @@ out_np = var_to_np(net(net_input))
 
 # psnr = compare_psnr(img_GT_np, out_np)
 psnr = compare_psnr(img_np, out_np)
-print('---')
-print(psnr)
+print("---")
+print("The PSNR after training: %.5f" % (psnr))
 q = plot_image_grid([np.clip(out_np, 0, 1), img_np], factor=13)
+plt.savefig("./out_imgs/req2-1-final-compare.png", bbox_inches="tight")
+plt.close()
