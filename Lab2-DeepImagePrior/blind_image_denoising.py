@@ -1,7 +1,7 @@
 # --- Import libs ---
 from __future__ import print_function
-# import matplotlib
-# matplotlib.use('Agg')
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 import sys, os
@@ -45,7 +45,7 @@ if fname == './images/noise_image.png':
     if PLOT:
         plot_image_grid([img_np], 4, 5) # perhaps need to change 4, 5
         
-elif fname == 'data/noise_GT.png':
+elif fname == './images/noise_GT.png':
     # Add synthetic noise 
     img_pil = crop_image(get_image(fname, imsize)[0], d=32)
     img_np = pil_to_np(img_pil)
@@ -83,7 +83,7 @@ if fname == './images/noise_image.png':
 
     net = net.type(dtype)
 
-elif fname == 'data/denoising/F16_GT.png':
+elif fname == './images/noise_GT.png':
     num_iter = 1800
     input_depth = 32 
     figsize = 4 
