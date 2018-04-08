@@ -49,8 +49,8 @@ if PLOT:
                                         compare_psnr(imgs['HR_np'], imgs['bicubic_np']), 
                                         compare_psnr(imgs['HR_np'], imgs['nearest_np'])))
 
-
-print('--')
+for fig in imags:
+    print(fig.size)
 # --- Set up parameters and net --
 input_depth = 32
  
@@ -74,7 +74,7 @@ else:
     assert False, 'We did not experiment with other factors'
 
 net_input = get_noise(input_depth, INPUT, (imgs['HR_pil'].size[1], imgs['HR_pil'].size[0])).type(dtype).detach()
-
+print(net_input)
 NET_TYPE = 'skip' # UNet, ResNet
 net = get_net(input_depth, 'skip', pad,
               skip_n33d=128, 
@@ -87,7 +87,7 @@ net = get_net(input_depth, 'skip', pad,
 mse = torch.nn.MSELoss().type(dtype)
 
 img_LR_var = np_to_var(imgs['LR_np']).type(dtype)
-
+print(img_LR_var)
 downsampler = Downsampler(n_planes=3, factor=factor, kernel_type=KERNEL_TYPE, phase=0.5, preserve_size=True).type(dtype)
 print(downsampler)
 # --- Define closure and optimize ---
@@ -129,12 +129,13 @@ noise = net_input.data.clone()
 
 i = 0
 p = get_params(OPT_OVER, net, net_input)
-optimize(OPTIMIZER, p, closure, LR, num_iter)
+print(p)
+# optimize(OPTIMIZER, p, closure, LR, num_iter)
 
-out_HR_np = np.clip(var_to_np(net(net_input)), 0, 1)
-result_deep_prior = put_in_center(out_HR_np, imgs['orig_np'].shape[1:])
+# out_HR_np = np.clip(var_to_np(net(net_input)), 0, 1)
+# result_deep_prior = put_in_center(out_HR_np, imgs['orig_np'].shape[1:])
 
 # For the paper we acually took `_bicubic.png` files from LapSRN viewer and used `result_deep_prior` as our result
-plot_image_grid([imgs['HR_np'],
-                 imgs['bicubic_np'],
-                 out_HR_np], factor=4, nrow=1)
+# plot_image_grid([imgs['HR_np'],
+                #  imgs['bicubic_np'],
+                #  out_HR_np], factor=4, nrow=1)
