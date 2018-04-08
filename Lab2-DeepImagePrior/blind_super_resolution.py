@@ -49,8 +49,8 @@ if PLOT:
                                         compare_psnr(imgs['HR_np'], imgs['bicubic_np']), 
                                         compare_psnr(imgs['HR_np'], imgs['nearest_np'])))
 
-for fig in imgs:
-    print(fig.size)
+for key, fig in imgs.items():
+    print(key, fig.size)
 # --- Set up parameters and net --
 input_depth = 32
  
