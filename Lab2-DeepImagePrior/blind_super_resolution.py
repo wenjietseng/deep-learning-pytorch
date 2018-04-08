@@ -65,7 +65,7 @@ tv_weight = 0.0
 OPTIMIZER = 'adam'
 
 if factor == 4: 
-    num_iter = 2000
+    num_iter = 1 # 2000
     reg_noise_std = 1.0 / 30.0
 elif factor == 8:
     num_iter = 4000
@@ -87,9 +87,9 @@ net = get_net(input_depth, 'skip', pad,
 mse = torch.nn.MSELoss().type(dtype)
 
 img_LR_var = np_to_var(imgs['LR_np']).type(dtype)
-print(img_LR_var)
+# print(img_LR_var)
 downsampler = Downsampler(n_planes=3, factor=factor, kernel_type=KERNEL_TYPE, phase=0.5, preserve_size=True).type(dtype)
-print(downsampler)
+# print(downsampler)
 # --- Define closure and optimize ---
 def closure():
     global i
@@ -98,8 +98,10 @@ def closure():
         net_input.data = net_input_saved + (noise.normal_() * reg_noise_std)
         
     out_HR = net(net_input)
+    print(out_HR)
     out_LR = downsampler(out_HR)
-
+    print(out_LR)
+    # use the mse of downsampled img of out_HR to do backpropagation
     total_loss = mse(out_LR, img_LR_var) 
     
     if tv_weight > 0:
@@ -129,12 +131,12 @@ noise = net_input.data.clone()
 
 i = 0
 p = get_params(OPT_OVER, net, net_input)
-# optimize(OPTIMIZER, p, closure, LR, num_iter)
+optimize(OPTIMIZER, p, closure, LR, num_iter)
 
-# out_HR_np = np.clip(var_to_np(net(net_input)), 0, 1)
-# result_deep_prior = put_in_center(out_HR_np, imgs['orig_np'].shape[1:])
+out_HR_np = np.clip(var_to_np(net(net_input)), 0, 1)
+result_deep_prior = put_in_center(out_HR_np, imgs['orig_np'].shape[1:])
 
-# For the paper we acually took `_bicubic.png` files from LapSRN viewer and used `result_deep_prior` as our result
-# plot_image_grid([imgs['HR_np'],
-                #  imgs['bicubic_np'],
-                #  out_HR_np], factor=4, nrow=1)
+# For the paper we actually took `_bicubic.png` files from LapSRN viewer and used `result_deep_prior` as our result
+plot_image_grid([imgs['HR_np'],
+                 imgs['bicubic_np'],
+                 out_HR_np], factor=4, nrow=1)
