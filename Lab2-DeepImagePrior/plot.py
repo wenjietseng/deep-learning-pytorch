@@ -4,10 +4,10 @@ import csv
 
 # --- requirment 1 ---
 # training loss
-mse_1 = open('./output/3rd-out1.csv', 'r')
-mse_2 = open('./output/3rd-out2.csv', 'r')
-mse_3 = open('./output/3rd-out3.csv', 'r')
-mse_4 = open('./output/3rd-out4.csv', 'r')
+mse_1 = open('./output/5th-out1.csv', 'r')
+mse_2 = open('./output/5th-out2.csv', 'r')
+mse_3 = open('./output/5th-out3.csv', 'r')
+mse_4 = open('./output/5th-out4.csv', 'r')
 
 def read_table(file):
     dta = []
@@ -33,7 +33,7 @@ plt.plot(range(2400), mse_2_dta, label="Image + noise")
 plt.plot(range(2400), mse_3_dta, label="Image shuffled")
 plt.plot(range(2400), mse_4_dta, label="U(0, 1) noise")
 plt.legend()
-plt.ylim([0., .25])
+plt.ylim([0., .15])
 plt.xlabel("Iteration (log scale)")
 plt.xscale("log")
 plt.ylabel('MSE')
