@@ -44,7 +44,8 @@ def load_LR_HR_imgs_sr(fname, imsize, factor, enforse_div32=None):
         img_HR_np = pil_to_np(img_HR_pil)
     else:
         img_HR_pil, img_HR_np = img_orig_pil, img_orig_np
-        
+    
+    # create Low resolution figure, can load from here also
     LR_size = [
                img_HR_pil.size[0] // factor, 
                img_HR_pil.size[1] // factor
