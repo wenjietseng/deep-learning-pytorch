@@ -1,10 +1,13 @@
 # --- Import libs ---
 from __future__ import print_function
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 #%matplotlib inline
 
 import argparse
-import os
+import sys, os
+import csv
 # os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 
 import numpy as np
@@ -30,6 +33,9 @@ PLOT = True
 # To produce images from the paper we took *_GT.png images from LapSRN viewer for corresponding factor,
 # e.g. x4/zebra_GT.png for factor=4, and x8/zebra_GT.png for factor=8 
 path_to_image = './images/SR_GT.png'
+time = sys.argv[1]
+if time == None:
+    exit("enter something to record the name of this training!")
 
 # --- Load Image and Baselines ---
 # Starts here
@@ -43,7 +49,9 @@ if PLOT:
                                         compare_psnr(imgs['HR_np'], imgs['bicubic_np']), 
                                         compare_psnr(imgs['HR_np'], imgs['nearest_np'])))
 
-# --- Set up parameters and net ---
+
+print('--')
+# --- Set up parameters and net --
 input_depth = 32
  
 INPUT       = 'noise'
@@ -58,7 +66,7 @@ OPTIMIZER = 'adam'
 
 if factor == 4: 
     num_iter = 2000
-    reg_noise_std = 0.03
+    reg_noise_std = 1.0 / 30.0
 elif factor == 8:
     num_iter = 4000
     reg_noise_std = 0.05
@@ -81,7 +89,7 @@ mse = torch.nn.MSELoss().type(dtype)
 img_LR_var = np_to_var(imgs['LR_np']).type(dtype)
 
 downsampler = Downsampler(n_planes=3, factor=factor, kernel_type=KERNEL_TYPE, phase=0.5, preserve_size=True).type(dtype)
-
+print(downsampler)
 # --- Define closure and optimize ---
 def closure():
     global i
