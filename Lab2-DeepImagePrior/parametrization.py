@@ -40,17 +40,18 @@ if para_setup == "1":
     img_noisy_np = pil_to_np(img_noisy_pil)
 elif para_setup == "2":
     # 2. image + noise
-    img_noisy_np = img_noisy_np + np.random.normal(0., 1., size=img_noisy_np.shape)	
-    img_noisy_np = np.clip(img_noisy_np, 0., 1.).astype(np.float32)
+	img_noisy_pil, img_noisy_np	= get_noisy_image(img_noisy_np, sigma_)
+    #img_noisy_np = img_noisy_np + np.random.normal(0., 1., size=img_noisy_np.shape)	
+    #img_noisy_np = np.clip(img_noisy_np, 0., 1.).astype(np.float32)
 elif para_setup == "3":
     # 3. image shuffled: random shuffle columns and rows
     #np.random.shuffle(img_noisy_np) # only shuffled RGB
-    ch, row = img_noisy_np.shape[0], img_noisy_np.shape[1]
-    for c in range(ch):
-        for r in range(row):
-            np.random.shuffle(img_noisy_np[c][r])
-        np.random.shuffle(img_noisy_np[c])
-    np.random.shuffle(img_noisy_np)
+    #ch, row = img_noisy_np.shape[0], img_noisy_np.shape[1]
+    #for c in range(ch):
+    #    for r in range(row):
+    #        np.random.shuffle(img_noisy_np[c][r])
+    #    np.random.shuffle(img_noisy_np[c])
+    np.random.shuffle(img_noisy_np.flat)
 elif para_setup == "4":
     # 4. noise only
     img_noisy_np = np.random.uniform(0., 1.,size=img_noisy_np.shape)
@@ -108,7 +109,7 @@ img_noisy_var = np_to_var(img_noisy_np).type(dtype)
 net_input_saved = net_input.data.clone()
 noise = net_input.data.clone()
 
-training_loss_writer = csv.writer(open("./output/4th-out"+ para_setup +".csv", 'w'))
+training_loss_writer = csv.writer(open("./output/5th-out"+ para_setup +".csv", 'w'))
 
 i = 0
 def closure():
@@ -131,7 +132,7 @@ def closure():
     if  PLOT and i % show_every == 0:
         out_np = var_to_np(out)
         plot_image_grid([np.clip(out_np, 0, 1)], factor=figsize, nrow=1)
-        plt.savefig("./out_imgs/4th-setup" + para_setup + "-" + str(i) + ".png", bbox_inches="tight")
+        plt.savefig("./out_imgs/5th-setup" + para_setup + "-" + str(i) + ".png", bbox_inches="tight")
         plt.close()
 
     training_loss_writer.writerow([i, total_loss.data[0]])
@@ -149,5 +150,5 @@ out_np = var_to_np(net(net_input))
 print(type(np.clip(out_np,0,1)))
 print(type(img_np))
 q = plot_image_grid([np.clip(out_np, 0, 1), img_np], factor=13) 
-plt.savefig("./out_imgs/4th-setup" + para_setup + "-final-compare.png", bbox_inches="tight")
+plt.savefig("./out_imgs/5th-setup" + para_setup + "-final-compare.png", bbox_inches="tight")
 plt.close()
