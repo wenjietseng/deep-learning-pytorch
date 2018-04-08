@@ -49,8 +49,8 @@ if PLOT:
                                         compare_psnr(imgs['HR_np'], imgs['bicubic_np']), 
                                         compare_psnr(imgs['HR_np'], imgs['nearest_np'])))
 
-for key, fig in imgs.items():
-    print(key, fig.size)
+# for key, fig in imgs.items():
+    # print(key, fig.size)
 # --- Set up parameters and net --
 input_depth = 32
  
@@ -74,7 +74,7 @@ else:
     assert False, 'We did not experiment with other factors'
 
 net_input = get_noise(input_depth, INPUT, (imgs['HR_pil'].size[1], imgs['HR_pil'].size[0])).type(dtype).detach()
-print(net_input)
+# print(net_input)
 NET_TYPE = 'skip' # UNet, ResNet
 net = get_net(input_depth, 'skip', pad,
               skip_n33d=128, 
@@ -129,7 +129,6 @@ noise = net_input.data.clone()
 
 i = 0
 p = get_params(OPT_OVER, net, net_input)
-print(p)
 # optimize(OPTIMIZER, p, closure, LR, num_iter)
 
 # out_HR_np = np.clip(var_to_np(net(net_input)), 0, 1)
