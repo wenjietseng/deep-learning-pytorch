@@ -65,7 +65,7 @@ tv_weight = 0.0
 OPTIMIZER = 'adam'
 
 if factor == 4: 
-    num_iter = 1 # 2000
+    num_iter = 2000
     reg_noise_std = 1.0 / 30.0
 elif factor == 8:
     num_iter = 4000
@@ -96,7 +96,8 @@ def closure():
     
     if reg_noise_std > 0:
         net_input.data = net_input_saved + (noise.normal_() * reg_noise_std)
-        
+    
+    # an interesting part
     out_HR = net(net_input)
     print(out_HR)
     out_LR = downsampler(out_HR)
@@ -116,15 +117,18 @@ def closure():
                       
     # History
     psnr_history.append([psnr_LR, psnr_HR])
-    
+    psnr_writer.writerow([psnr_LR, psnr_HR])
+
     if PLOT and i % 500 == 0:
         out_HR_np = var_to_np(out_HR)
         plot_image_grid([imgs['HR_np'], imgs['bicubic_np'], np.clip(out_HR_np, 0, 1)], factor=13, nrow=3)
-
+        plt.savefig("./out_imgs/req3-" + time + "-" + str(i) + ".png", bbox_inches="tight")
+        plt.close()
     i += 1
     
     return total_loss
 
+psnr_writer = csv.writer(open("./output/req3-psnr-out-" + time + ".csv", "w"))
 psnr_history = [] 
 net_input_saved = net_input.data.clone()
 noise = net_input.data.clone()
@@ -140,3 +144,11 @@ result_deep_prior = put_in_center(out_HR_np, imgs['orig_np'].shape[1:])
 plot_image_grid([imgs['HR_np'],
                  imgs['bicubic_np'],
                  out_HR_np], factor=4, nrow=1)
+
+plt.savefig("./out_imgs/req3-final" + time + "-" + str(i) + ".png", bbox_inches="tight")
+plt.close()
+
+
+plot_image_grid([result_deep_prior], factor=13)
+plt.savefig("./out_imgs/req3-resultDeepPrior-" + time + "-" + str(i) + ".png", bbox_inches="tight")
+plt.close()
