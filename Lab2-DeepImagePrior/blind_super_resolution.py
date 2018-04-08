@@ -99,9 +99,9 @@ def closure():
     
     # an interesting part
     out_HR = net(net_input)
-    print(out_HR)
+    # print(out_HR)
     out_LR = downsampler(out_HR)
-    print(out_LR)
+    # print(out_LR)
     # use the mse of downsampled img of out_HR to do backpropagation
     total_loss = mse(out_LR, img_LR_var) 
     
