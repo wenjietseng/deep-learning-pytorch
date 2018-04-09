@@ -107,7 +107,7 @@ def closure():
     
     out_HR = net(net_input)
     out_LR = downsampler(out_HR)
-    out_LR = pil_to_np(crop_image(np_to_pil(var_to_np(out_LR))))
+    out_LR = np_to_var(pil_to_np(crop_image(np_to_pil(var_to_np(out_LR)))))
     # use the mse of downsampled img of out_HR to do backpropagation
     total_loss = mse(out_LR, img_LR_var) 
     
@@ -125,7 +125,7 @@ def closure():
     psnr_history.append([psnr_LR, psnr_HR])
     psnr_writer.writerow([psnr_LR, psnr_HR])
 
-    if PLOT and i % 500 == 0:
+    if PLOT and i % 400 == 0:
         out_HR_np = var_to_np(out_HR)
         plot_image_grid([np.clip(out_HR_np, 0, 1)], factor=13, nrow=3)
         plt.savefig("./out_imgs/req3-" + time + "-" + str(i) + ".png", bbox_inches="tight")
