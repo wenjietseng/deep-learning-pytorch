@@ -107,7 +107,7 @@ def closure():
     
     out_HR = net(net_input)
     out_LR = downsampler(out_HR)
-    
+    print(type(out_LR))
 
 
     # out_LR = np_to_var(pil_to_np(crop_image(np_to_pil(var_to_np(out_LR))))).type(dtype)
