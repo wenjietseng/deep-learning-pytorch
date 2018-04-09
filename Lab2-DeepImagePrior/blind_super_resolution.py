@@ -1,7 +1,7 @@
 # --- Import libs ---
 from __future__ import print_function
 import matplotlib
-# matplotlib.use('Agg')
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 #%matplotlib inline
 
