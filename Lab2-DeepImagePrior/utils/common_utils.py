@@ -230,6 +230,7 @@ def optimize(optimizer_type, parameters, closure, LR, num_iter):
         assert False
 
 def shuffled_img(img_path,BLOCKLEN=2):
+    import random
     BLOCKLEN = 2 # Adjust and be careful here.
 
     img = Image.open(img_path)
