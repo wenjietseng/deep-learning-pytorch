@@ -255,14 +255,14 @@ def shuffled_img(img_path,BLOCKLEN=2):
 
 
 def crop_LR(LR_var_from_HR, d=32):
-    tmp = var_to_np(LR_var_from_HR)
+    #tmp = var_to_np(LR_var_from_HR)
     print(tmp.shape)
-    new_size = (tmp.shape[2] - tmp.shape[2] % d,
-                tmp.shape[3] - tmp.shape[3] % d)
+    new_size = (tmp.shape[1] - tmp.shape[1] % d,
+                tmp.shape[2] - tmp.shape[2] % d)
     bbox = [
             int((tmp.shape[2] - new_size[0]) / 2),
             int((tmp.shape[3] - new_size[1]) / 2),
             int((tmp.shape[2] + new_size[0]) / 2),
             int((tmp.shape[3] + new_size[1]) / 2),
     ]
-    return tmp[:, :, bbox[0]:bbox[2], bbox[1]:bbox[3]]
+    return tmp[:, bbox[0]:bbox[2], bbox[1]:bbox[3]]
