@@ -107,7 +107,7 @@ def closure():
     
     out_HR = net(net_input)
     out_LR = downsampler(out_HR)
-    out_LR = pil_to_np(crop_image(np_to_pil(out_LR)))
+    out_LR = pil_to_np(crop_image(np_to_pil(var_to_np(out_LR))))
     # use the mse of downsampled img of out_HR to do backpropagation
     total_loss = mse(out_LR, img_LR_var) 
     
