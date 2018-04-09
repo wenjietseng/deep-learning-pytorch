@@ -256,15 +256,12 @@ def shuffled_img(img_path,BLOCKLEN=2):
 
 def crop_LR(LR_var_from_HR, d=32):
     tmp = var_to_np(LR_var_from_HR)
-    tmp = np_to_pil(tmp)
-    new_size = (tmp.size[0] - tmp.size[0] % d,
-                tmp.size[1] - tmp.size[1] % d)
+    new_size = (tmp.shape[2] - tmp.shape[2] % d,
+                tmp.shape[3] - tmp.shape[3] % d)
     bbox = [
-            int((tmp.size[0] - new_size[0]) / 2),
-            int((tmp.size[1] - new_size[1]) / 2),
-            int((tmp.size[0] + new_size[0]) / 2),
-            int((tmp.size[1] + new_size[1]) / 2),
+            int((tmp.shape[2] - new_size[0]) / 2),
+            int((tmp.shape[3] - new_size[1]) / 2),
+            int((tmp.shape[2] + new_size[0]) / 2),
+            int((tmp.shape[3] + new_size[1]) / 2),
     ]
-    tmp_cropped = tmp.crop(bbox)
-    tmp_cropped = pil_to_np(tmp_cropped)
-    return np_to_var(tmp_cropped).type(torch.cuda.FloatTensor)
+    return tmp[:, :, bbox[0]:bbox[2], bbox[1]:bbox[3]]
