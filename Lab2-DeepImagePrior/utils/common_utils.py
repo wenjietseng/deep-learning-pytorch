@@ -267,4 +267,4 @@ def crop_LR(LR_var_from_HR, d=32):
     ]
     tmp_cropped = tmp.crop(bbox)
     tmp_cropped = pil_to_np(tmp_cropped)
-    return np_to_var(tmp_cropped)
+    return np_to_var(tmp_cropped).type(torch.cuda.FloatTensor)
