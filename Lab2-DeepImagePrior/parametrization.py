@@ -53,7 +53,8 @@ elif para_setup == "3":
     #    np.random.shuffle(img_noisy_np[c])
     # np.random.shuffle(img_noisy_np.flat)
     shuffled_img_out = shuffled_img(fname, 2)
-    img_noisy_np = shuffled_img_out
+    img_noisy_np = shuffled_img_out # Image type
+    img_noisy_np = pil_to_np(img_noisy_np) # change back to np after shuffling
 elif para_setup == "4":
     # 4. noise only
     img_noisy_np = np.random.uniform(0., 1.,size=img_noisy_np.shape)
