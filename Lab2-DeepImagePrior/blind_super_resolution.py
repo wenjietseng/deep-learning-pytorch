@@ -107,12 +107,12 @@ def closure():
     
     out_HR = net(net_input)
     out_LR = downsampler(out_HR)
-    print(type(out_LR))
-
+    out_LR_compare = out_LR.clone()
+    out_LR_compare = crop_LR(out_LR_compare)
 
     # out_LR = np_to_var(pil_to_np(crop_image(np_to_pil(var_to_np(out_LR))))).type(dtype)
     # use the mse of downsampled img of out_HR to do backpropagation
-    total_loss = mse(out_LR, img_LR_var) 
+    total_loss = mse(out_LR_compare, img_LR_var) 
     
     if tv_weight > 0:
         total_loss += tv_weight * tv_loss(out_HR)

@@ -229,6 +229,8 @@ def optimize(optimizer_type, parameters, closure, LR, num_iter):
     else:
         assert False
 
+# my new functions
+
 def shuffled_img(img_path,BLOCKLEN=2):
     import random
     BLOCKLEN = 2 # Adjust and be careful here.
@@ -250,3 +252,19 @@ def shuffled_img(img_path,BLOCKLEN=2):
         result.paste(c, box)
     return result
     # result.save(sys.argv[2])
+
+
+def crop_LR(LR_var_from_HR, d=32):
+    tmp = var_to_np(LR_var_from_HR)
+    tmp = np_to_pil(tmp)
+    new_size = (tmp.size[0] - tmp.size[0] % d,
+                tmp.size[1] - tmp.size[1] % d)
+    bbox = [
+            int((tmp.size[0] - new_size[0]) / 2),
+            int((tmp.size[1] - new_size[1]) / 2),
+            int((tmp.size[0] + new_size[0]) / 2),
+            int((tmp.size[1] + new_size[1]) / 2),
+    ]
+    tmp_cropped = tmp.crop(bbox)
+    tmp_cropped = pil_to_np(tmp_cropped)
+    return np_to_var(tmp_cropped)
