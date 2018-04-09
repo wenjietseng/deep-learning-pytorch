@@ -229,15 +229,14 @@ def optimize(optimizer_type, parameters, closure, LR, num_iter):
     else:
         assert False
 
-
 def shuffled_img(img_path,BLOCKLEN=2):
     BLOCKLEN = 2 # Adjust and be careful here.
 
     img = Image.open(img_path)
     width, height = img.size
 
-    xblock = width / BLOCKLEN
-    yblock = height / BLOCKLEN
+    xblock = width // BLOCKLEN
+    yblock = height // BLOCKLEN
     blockmap = [(xb*BLOCKLEN, yb*BLOCKLEN, (xb+1)*BLOCKLEN, (yb+1)*BLOCKLEN)
             for xb in range(xblock) for yb in range(yblock)]
 
