@@ -51,7 +51,9 @@ elif para_setup == "3":
     #    for r in range(row):
     #        np.random.shuffle(img_noisy_np[c][r])
     #    np.random.shuffle(img_noisy_np[c])
-    np.random.shuffle(img_noisy_np.flat)
+    # np.random.shuffle(img_noisy_np.flat)
+    shuffled_img_out = shuffled_img(fname, 2)
+    img_noisy_np = shuffled_img_out
 elif para_setup == "4":
     # 4. noise only
     img_noisy_np = np.random.uniform(0., 1.,size=img_noisy_np.shape)
