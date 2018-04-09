@@ -56,9 +56,11 @@ img_GT_np = pil_to_np(img_GT_pil)
 #                                         compare_psnr(imgs['HR_np'], imgs['nearest_np'])))
 
 plot_image_grid([img_LR_np], factor=13)
+plt.savefig("./out_imgs/req3-LR.png", bbox_inches="tight")
+plt.close()
 plot_image_grid([img_GT_np], factor=13)
-
-
+plt.savefig("./out_imgs/req3-GT.png", bbox_inches="tight")
+plt.close()
 # --- Set up parameters and net --
 input_depth = 32
  
