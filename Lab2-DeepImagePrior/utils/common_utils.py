@@ -256,7 +256,7 @@ def shuffled_img(img_path,BLOCKLEN=2):
 
 def crop_LR(LR_var_from_HR, d=32):
     #tmp = var_to_np(LR_var_from_HR)
-    print(tmp.shape)
+    print(LR_var_from_HR.shape)
     new_size = (tmp.shape[1] - tmp.shape[1] % d,
                 tmp.shape[2] - tmp.shape[2] % d)
     bbox = [
