@@ -44,8 +44,8 @@ preprocess = trn.Compose([
         trn.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
 ])
 
-from misc.resnet_utils import myResnet 
-import misc.resnet as resnet
+from .misc.resnet_utils import myResnet 
+from .misc import resnet as resnet
 
 
 def main(params):
