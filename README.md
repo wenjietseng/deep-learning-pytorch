@@ -25,3 +25,15 @@ $ source ~/venv-3/bin/activate
     year      = {2017}
 }
 ```
+
+* Lab3: Image Caption
+```
+@misc{Luo2017,
+author = {Ruotian Luo},
+title = {An Image Captioning codebase in PyTorch},
+year = {2017},
+publisher = {GitHub},
+journal = {GitHub repository},
+howpublished = {\url{https://github.com/ruotianluo/ImageCaptioning.pytorch}},
+}
+```
