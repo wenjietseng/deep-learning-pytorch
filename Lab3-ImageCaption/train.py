@@ -82,9 +82,9 @@ def train(opt):
         optimizer.load_state_dict(torch.load(os.path.join(opt.start_from, 'optimizer.pth')))
 
     # add csv writer
-    if args.caption_model == 'show_attend_tell':
+    if opt.caption_model == 'show_attend_tell':
         loss_writer = csv.writer(open("./showAttendTell.csv", 'w'))
-    elif args.caption_model == 'topdown':
+    elif opt.caption_model == 'topdown':
         loss_writer = csv.writer(open("./topdown.csv", 'w'))
     else:
         loss_writer = csv.writer(open("./a-train-loss.csv", 'w'))
