@@ -18,6 +18,7 @@ import models
 from dataloader import *
 import eval_utils
 import misc.utils as utils
+import csv
 
 try:
     import tensorflow as tf
@@ -80,6 +81,14 @@ def train(opt):
     if vars(opt).get('start_from', None) is not None:
         optimizer.load_state_dict(torch.load(os.path.join(opt.start_from, 'optimizer.pth')))
 
+    # add csv writer
+    if args.caption_model == 'show_attend_tell':
+        loss_writer = csv.writer(open("./showAttendTell.csv", 'w'))
+    elif args.caption_model == 'topdown':
+        loss_writer = csv.writer(open("./topdown.csv", 'w'))
+    else:
+        loss_writer = csv.writer(open("./a-train-loss.csv", 'w'))
+
     while True:
         if update_lr_flag:
                 # Assign the learning rate
@@ -119,7 +128,7 @@ def train(opt):
         end = time.time()
         print("iter {} (epoch {}), train_loss = {:.3f}, time/batch = {:.3f}" \
             .format(iteration, epoch, train_loss, end - start))
-
+        loss_writer.writerow([iteration, epoch, train_loss])
         # Update the iteration and epoch
         iteration += 1
         if data['bounds']['wrapped']:
