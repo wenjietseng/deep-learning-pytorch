@@ -7,7 +7,7 @@
 # eval show attend tell
 echo "eval show attend tell"
 python2 eval.py --model ./log_showAttendTell/model-best.pth \
---info_path ./log_showAttendTell/infos_showAttendTell-best.pkl \
+--infos_path ./log_showAttendTell/infos_showAttendTell-best.pkl \
 --image_folder ./interest --num_images 50
 
 
