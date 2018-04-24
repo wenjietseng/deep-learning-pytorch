@@ -104,12 +104,12 @@ def eval_split(model, crit, loader, eval_kwargs={}):
         tmp = [Variable(torch.from_numpy(_), volatile=True).cuda() for _ in tmp]
         fc_feats, att_feats = tmp
         # forward the model to also get generated samples for each image
-        seq, weights = model.sample(fc_feats, att_feats, eval_kwargs)
-        alphas.append(weights)
+        seq, _ = model.sample(fc_feats, att_feats, eval_kwargs)
+        # alphas.append(weights)
         #set_trace()
         sents = utils.decode_sequence(loader.get_vocab(), seq)
-        idx = 0
-        alps = torch.cat(alphas[idx][1:], 0)
+        # idx = 0
+        # alps = torch.cat(alphas[idx][1:], 0)
         # print(predictions)
         # print(sents)
         # print(alps)
@@ -128,8 +128,8 @@ def eval_split(model, crit, loader, eval_kwargs={}):
             if verbose:
                 print('image %s: %s' %(entry['image_id'], entry['caption']))
 
-        attention_visualization(root, predictions[idx][0], sents, alps.data.cpu())
-        idx += 1
+        # attention_visualization(root, predictions[idx][0], sents, alps.data.cpu())
+        # idx += 1
 
         # if we wrapped around the split or used up val imgs budget then bail
         ix0 = data['bounds']['it_pos_now']
