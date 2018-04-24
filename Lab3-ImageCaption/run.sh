@@ -6,8 +6,8 @@
 
 # eval show attend tell
 echo "eval show attend tell"
-python2 eval.py --model log_showAttendTell/model-best.pth --info_path log_showAttendTell/ \
---image_folder interest/ --num_images 50
+python2 eval.py --model log_showAttendTell/model-best.pth --info_path log_showAttendTell \
+--image_folder interest --num_images 50
 
 
 # python train.py --id topDown --caption_model topdown --input_json data/cocotalk.json \
