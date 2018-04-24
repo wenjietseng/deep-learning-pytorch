@@ -16,6 +16,9 @@ import os
 import sys
 import misc.utils as utils
 
+from PIL import Image
+import skimage.transform
+
 def language_eval(dataset, preds, model_id, split):
     import sys
     if 'coco' in dataset:
@@ -78,6 +81,7 @@ def eval_split(model, crit, loader, eval_kwargs={}):
     loss_sum = 0
     loss_evals = 1e-8
     predictions = []
+    alphas = []
     while True:
         data = loader.get_batch(split)
         n = n + loader.batch_size
@@ -99,10 +103,15 @@ def eval_split(model, crit, loader, eval_kwargs={}):
         tmp = [Variable(torch.from_numpy(_), volatile=True).cuda() for _ in tmp]
         fc_feats, att_feats = tmp
         # forward the model to also get generated samples for each image
-        seq, _ = model.sample(fc_feats, att_feats, eval_kwargs)
-        
+        seq, weights = model.sample(fc_feats, att_feats, eval_kwargs)
+        alphas.append(weights)
         #set_trace()
         sents = utils.decode_sequence(loader.get_vocab(), seq)
+        idx = 0
+        alps = torch.cat(alphas[idx][1:], 0)
+        print(sents)
+        attention_visualization(root, names[idx][0], cap, alps.data.cpu())
+        idx += 1
 
         for k, sent in enumerate(sents):
             entry = {'image_id': data['infos'][k]['id'], 'caption': sent}
@@ -141,3 +150,25 @@ def eval_split(model, crit, loader, eval_kwargs={}):
     # Switch back to training mode
     model.train()
     return loss_sum/loss_evals, predictions, lang_stats
+
+
+def attention_visualization(root, image_name, caption, alphas):
+    image = Image.open(os.path.join(root, image_name))
+    image = image.resize([224, 224], Image.LANCZOS)
+    plt.subplot(4,5,1)
+    plt.imshow(image)
+    plt.axis('off')
+    
+    words = caption[1:]
+    for t in range(len(words)):
+        if t > 18:
+            break
+        plt.subplot(4, 5, t+2)
+        plt.text(0, 1, '%s'%(words[t]) , color='black', backgroundcolor='white', fontsize=8)
+        plt.imshow(image)
+        # print alphas
+        alp_curr = alphas[t, :].view(14, 14)
+        alp_img = skimage.transform.pyramid_expand(alp_curr.numpy(), upscale=16, sigma=20)
+        plt.imshow(alp_img, alpha=0.85)
+        plt.axis('off')
+    plt.show()

@@ -20,7 +20,7 @@ echo "karpathy's test split"
 python2 eval.py --num_images 200 \
 --model ./log_showAttendTell/model-best.pth \
 --infos_path ./log_showAttendTell/infos_showAttendTell-best.pkl \
---language_eval 1 
+--language_eval 1 --images_root ~/coco14
 
 # python train.py --id topDown --caption_model topdown --input_json data/cocotalk.json \
 # --input_fc_dir data/cocotalk_fc --input_att_dir data/cocotalk_att \
