@@ -110,7 +110,9 @@ def eval_split(model, crit, loader, eval_kwargs={}):
         sents = utils.decode_sequence(loader.get_vocab(), seq)
         idx = 0
         alps = torch.cat(alphas[idx][1:], 0)
+        print(predictions)
         print(sents)
+        print(alps)
         attention_visualization(root, predictions[idx][0], sents[0], alps.data.cpu())
         idx += 1
 
