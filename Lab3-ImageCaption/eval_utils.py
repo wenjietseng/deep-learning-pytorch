@@ -76,6 +76,7 @@ def eval_split(model, crit, loader, eval_kwargs={}):
 
     loader.reset_iterator(split)
 
+    root = '~/coco14/val2014'
     n = 0
     loss = 0
     loss_sum = 0
@@ -110,7 +111,7 @@ def eval_split(model, crit, loader, eval_kwargs={}):
         idx = 0
         alps = torch.cat(alphas[idx][1:], 0)
         print(sents)
-        attention_visualization(root, names[idx][0], cap, alps.data.cpu())
+        attention_visualization(root, predictions[idx][0], sents, alps.data.cpu())
         idx += 1
 
         for k, sent in enumerate(sents):
