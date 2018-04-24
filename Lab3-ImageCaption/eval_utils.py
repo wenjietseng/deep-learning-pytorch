@@ -111,7 +111,7 @@ def eval_split(model, crit, loader, eval_kwargs={}):
         idx = 0
         alps = torch.cat(alphas[idx][1:], 0)
         print(sents)
-        attention_visualization(root, predictions[idx][0], sents, alps.data.cpu())
+        attention_visualization(root, predictions[idx][0], sents[0], alps.data.cpu())
         idx += 1
 
         for k, sent in enumerate(sents):
@@ -162,7 +162,7 @@ def attention_visualization(root, image_name, caption, alphas):
     
     words = caption[1:]
     for t in range(len(words)):
-        if t > 18:
+        if t > 16:
             break
         plt.subplot(4, 5, t+2)
         plt.text(0, 1, '%s'%(words[t]) , color='black', backgroundcolor='white', fontsize=8)
