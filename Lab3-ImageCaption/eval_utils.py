@@ -110,11 +110,9 @@ def eval_split(model, crit, loader, eval_kwargs={}):
         sents = utils.decode_sequence(loader.get_vocab(), seq)
         idx = 0
         alps = torch.cat(alphas[idx][1:], 0)
-        print(predictions)
-        print(sents)
-        print(alps)
-        attention_visualization(root, predictions[idx][0], sents[0], alps.data.cpu())
-        idx += 1
+        # print(predictions)
+        # print(sents)
+        # print(alps)
 
         for k, sent in enumerate(sents):
             entry = {'image_id': data['infos'][k]['id'], 'caption': sent}
@@ -129,6 +127,9 @@ def eval_split(model, crit, loader, eval_kwargs={}):
 
             if verbose:
                 print('image %s: %s' %(entry['image_id'], entry['caption']))
+
+        attention_visualization(root, predictions[idx][0], sents, alps.data.cpu())
+        idx += 1
 
         # if we wrapped around the split or used up val imgs budget then bail
         ix0 = data['bounds']['it_pos_now']
