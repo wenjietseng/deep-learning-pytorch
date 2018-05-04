@@ -28,6 +28,7 @@ class OldModel(CaptionModel):
         self.drop_prob_lm = opt.drop_prob_lm
         self.seq_length = opt.seq_length
         self.fc_feat_size = opt.fc_feat_size
+        # attention feature size
         self.att_feat_size = opt.att_feat_size
 
         self.ss_prob = 0.0 # Schedule sampling probability
@@ -57,7 +58,7 @@ class OldModel(CaptionModel):
         state = self.init_hidden(fc_feats)
 
         outputs = []
-
+        weights = []
         for i in range(seq.size(1) - 1):
             if self.training and i >= 1 and self.ss_prob > 0.0: # otherwiste no need to sample
                 sample_prob = fc_feats.data.new(batch_size).uniform_(0, 1)
@@ -80,7 +81,9 @@ class OldModel(CaptionModel):
 
             xt = self.embed(it)
 
-            output, state = self.core(xt, fc_feats, att_feats, state)
+            # return weight from ShowAttendTellCore
+            output, state, weight = self.core(xt, fc_feats, att_feats, state)
+            weights.append(weight)
             output = F.log_softmax(self.logit(self.dropout(output)))
             outputs.append(output)
 
@@ -225,7 +228,7 @@ class ShowAttendTellCore(nn.Module):
         att_res = torch.bmm(weight.unsqueeze(1), att_feats_).squeeze(1) # batch * att_feat_size
 
         output, state = self.rnn(torch.cat([xt, att_res], 1).unsqueeze(0), state)
-        return output.squeeze(0), state
+        return output.squeeze(0), state, weight # add return weight
 
 class AllImgCore(nn.Module):
     def __init__(self, opt):
