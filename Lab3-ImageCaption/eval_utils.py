@@ -98,8 +98,6 @@ def eval_split(model, crit, loader, eval_kwargs={}):
 
             # 
             value, alphas = model(fc_feats, att_feats, labels)
-            print("printing alphas")
-            print(alphas)
             loss = crit(value, labels[:,1:], masks[:,1:]).data[0]
             #
             loss_sum = loss_sum + loss
@@ -113,6 +111,8 @@ def eval_split(model, crit, loader, eval_kwargs={}):
         fc_feats, att_feats = tmp
         # forward the model to also get generated samples for each image
         seq, state, weights = model.sample(fc_feats, att_feats, eval_kwargs)
+        print('printing weights')
+        print(weights)
         sents = utils.decode_sequence(loader.get_vocab(), seq)
 
         for k, sent in enumerate(sents):
@@ -144,7 +144,7 @@ def eval_split(model, crit, loader, eval_kwargs={}):
             plt.text(0, 1, '%s' % (words[t]), color='black', backgroundcolor='white', fontsize=8)
             plt.imshow(origin_img)
             print(len(alphas))
-            alphas = alphas[t]
+            alpha = alphas[t]
             index = Variable(torch.cuda.LongTensor([k*loader.seq_per_img]))
             alpha = torch.index_select(alpha, 0, index)
             alpha = alpha.view(-1,14).cpu().data.numpy()
