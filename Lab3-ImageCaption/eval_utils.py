@@ -95,7 +95,7 @@ def eval_split(model, crit, loader, eval_kwargs={}):
 
             # 
             value, alphas = model(fc_feats, att_feats, labels)
-            print(alphas.shape)
+            print(len(alphas))
             loss = crit(value, labels[:,1:], masks[:,1:]).data[0]
             #
             loss_sum = loss_sum + loss

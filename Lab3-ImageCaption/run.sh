@@ -17,7 +17,7 @@
 
 # eval karpathy's test split
 echo "karpathy's test split"
-python2 eval.py --num_images 2 \
+python2 eval.py --num_images 50 \
 --model ./log_showAttendTell/model-best.pth \
 --infos_path ./log_showAttendTell/infos_showAttendTell-best.pkl \
 --language_eval 1
