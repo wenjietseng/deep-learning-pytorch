@@ -95,7 +95,6 @@ def eval_split(model, crit, loader, eval_kwargs={}):
 
             # 
             value, alphas = model(fc_feats, att_feats, labels)
-            print(len(alphas), len(alphas[0]), len(alphas[0][0]))
             loss = crit(value, labels[:,1:], masks[:,1:]).data[0]
             #
             loss_sum = loss_sum + loss
@@ -109,14 +108,7 @@ def eval_split(model, crit, loader, eval_kwargs={}):
         fc_feats, att_feats = tmp
         # forward the model to also get generated samples for each image
         seq, state, weights = model.sample(fc_feats, att_feats, eval_kwargs)
-        # alphas.append(weights)
-        #set_trace()
         sents = utils.decode_sequence(loader.get_vocab(), seq)
-        # idx = 0
-        # alps = torch.cat(alphas[idx][1:], 0)
-        # print(predictions)
-        # print(sents)
-        # print(alps)
 
         for k, sent in enumerate(sents):
             entry = {'image_id': data['infos'][k]['id'], 'caption': sent}
@@ -132,8 +124,9 @@ def eval_split(model, crit, loader, eval_kwargs={}):
             if verbose:
                 print('image %s: %s' %(entry['image_id'], entry['caption']))
 
-        # attention_visualization(root, predictions[idx][0], sents, alps.data.cpu())
-        # idx += 1
+        # plot attention map
+        words = entry['caption'].split(' ')
+        print(words)
 
         # if we wrapped around the split or used up val imgs budget then bail
         ix0 = data['bounds']['it_pos_now']
@@ -160,23 +153,3 @@ def eval_split(model, crit, loader, eval_kwargs={}):
     return loss_sum/loss_evals, predictions, lang_stats
 
 
-def attention_visualization(root, image_name, caption, alphas):
-    image = Image.open(os.path.join(root, image_name))
-    image = image.resize([224, 224], Image.LANCZOS)
-    plt.subplot(4,5,1)
-    plt.imshow(image)
-    plt.axis('off')
-    
-    words = caption[1:]
-    for t in range(len(words)):
-        if t > 16:
-            break
-        plt.subplot(4, 5, t+2)
-        plt.text(0, 1, '%s'%(words[t]) , color='black', backgroundcolor='white', fontsize=8)
-        plt.imshow(image)
-        # print alphas
-        alp_curr = alphas[t, :].view(14, 14)
-        alp_img = skimage.transform.pyramid_expand(alp_curr.numpy(), upscale=16, sigma=20)
-        plt.imshow(alp_img, alpha=0.85)
-        plt.axis('off')
-    plt.show()
