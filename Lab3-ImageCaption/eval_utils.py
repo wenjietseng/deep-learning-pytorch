@@ -18,6 +18,7 @@ import misc.utils as utils
 
 from PIL import Image
 import skimage.transform
+from matplotlib import pyplot as plt
 
 def language_eval(dataset, preds, model_id, split):
     import sys
@@ -124,9 +125,29 @@ def eval_split(model, crit, loader, eval_kwargs={}):
             if verbose:
                 print('image %s: %s' %(entry['image_id'], entry['caption']))
 
-        # plot attention map
-        words = entry['caption'].split(' ')
-        print(words)
+            # plot attention map
+            words = entry['caption'].split(' ')
+            origin_img = Image.open('vis/imgs/img' + str(len(predictions)) + '.jpg')
+            plt.clf()
+            plt.subplot(4, 5, 1)
+            plt.imshow(origin_img)
+            plt.axis('off')
+            for t in range(len(words)):
+                if t > 18:
+                    break
+                plt.subplot(4, 5, t + 2)
+                plt.text(0, 1, '%s' % (words[t]), color='black', backgroundcolor='white', fontsize=8)
+                plt.imshow(origin_img)
+                alphas = alphas[t]
+                index = Variable(torch.cuda.LongTensor([k*loader.seq_per_img]))
+                alpha = torch.index_select(alpha, 0, index)
+                alpha = alpha.view(-1,14).cpu().data.numpy()
+                alps = resize(alpha, (origin_img.size[1], origin_img.size[0]))
+                plt.imshow(alps, alpha=0.7)
+                plt.axis('off')
+            plt.savefig('vis/att/' + str(len(predictions)) + '.jpg', dpi=200)
+            plt.clf()
+
 
         # if we wrapped around the split or used up val imgs budget then bail
         ix0 = data['bounds']['it_pos_now']
