@@ -131,7 +131,7 @@ def eval_split(model, crit, loader, eval_kwargs={}):
         words = entry['caption'].split(' ')
         origin_img = Image.open('vis/imgs/img' + str(len(predictions)) + '.jpg')
         print("finish load")
-        # plt.clf()
+        plt.clf()
         plt.subplot(4, 5, 1)
         plt.imshow(origin_img)
         plt.axis('off')
