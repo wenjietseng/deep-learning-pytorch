@@ -19,6 +19,7 @@ import misc.utils as utils
 from PIL import Image
 import skimage.transform
 from matplotlib import pyplot as plt
+ioff()
 
 def language_eval(dataset, preds, model_id, split):
     import sys
