@@ -11,17 +11,16 @@
 
 # eval
 # echo "eval show attend tell"
-# python2 eval.py --model ./log_showAttendTell/model-best.pth \
-# --infos_path ./log_showAttendTell/infos_showAttendTell-best.pkl \
-# --image_folder ./interest --num_images 50
-
-# eval karpathy's test split
-echo "karpathy's test split"
-python2 eval.py --num_images 50 \
---model ./log_showAttendTell/model-best.pth \
+python2 eval.py --model ./log_showAttendTell/model-best.pth \
 --infos_path ./log_showAttendTell/infos_showAttendTell-best.pkl \
---language_eval 1 --image_root ~/coco14
+--image_folder ./eval_img --num_images 50
 
+# # eval karpathy's test split
+# echo "karpathy's test split"
+# python2 eval.py --num_images 50 \
+# --model ./log_showAttendTell/model-best.pth \
+# --infos_path ./log_showAttendTell/infos_showAttendTell-best.pkl \
+# --language_eval 1 --image_folder
 #
 # topdown
 #
