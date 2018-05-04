@@ -93,10 +93,10 @@ class OldModel(CaptionModel):
         # 'it' is Variable contraining a word index
         xt = self.embed(it)
 
-        output, state, _ = self.core(xt, tmp_fc_feats, tmp_att_feats, state)
+        output, state, weights = self.core(xt, tmp_fc_feats, tmp_att_feats, state)
         logprobs = F.log_softmax(self.logit(self.dropout(output)))
 
-        return logprobs, state
+        return logprobs, state, weights
 
     def sample_beam(self, fc_feats, att_feats, opt={}):
         beam_size = opt.get('beam_size', 10)
