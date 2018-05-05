@@ -138,20 +138,17 @@ def eval_split(model, crit, loader, eval_kwargs={}):
                 alphas = weights[k]
                 plt.axis('off')
                 for t in range(len(words)):
-                    if t > 18:
+                    if t > 16:
                         break
                     plt.subplot(4, 5, t + 2)
                     plt.text(0, 1, '%s' % (words[t]), color='black', backgroundcolor='white', fontsize=8)
                     plt.imshow(origin_img)
-                    alpha = alphas[t][1]
-                    # print(alpha)
-                    # index = Variable(torch.cuda.LongTensor([k*loader.seq_per_img]))
+                    alpha = alphas[t]
+                    # print(alpha)# 196
+                    index = Variable(torch.cuda.LongTensor([k*loader.seq_per_img]))
                     # print(index)
-                    # alpha = torch.index_select(alpha, 0, index)
-                    # print(alpha)
-                    # alpha = alpha.view(-1,14).cpu().data.numpy()
-                    # print("print alpha in each word")
-                    # print(alpha)
+                    alpha = torch.index_select(alpha, 0, index)
+                    alpha = alpha.view(-1,14).cpu().data.numpy()
                     alps = np.resize(alpha, (origin_img.size[1], origin_img.size[0]))
                     plt.imshow(alps, alpha=0.7)
                     plt.axis('off')
