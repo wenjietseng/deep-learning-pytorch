@@ -108,6 +108,8 @@ class OldModel(CaptionModel):
         # lets process every image independently for now, for simplicity
 
         self.done_beams = [[] for _ in range(batch_size)]
+        weights = []
+
         for k in range(batch_size):
             tmp_fc_feats = fc_feats[k:k+1].expand(beam_size, self.fc_feat_size)
             tmp_att_feats = att_feats[k:k+1].expand(*((beam_size,)+att_feats.size()[1:])).contiguous()
@@ -118,18 +120,18 @@ class OldModel(CaptionModel):
             beam_seq_logprobs = torch.FloatTensor(self.seq_length, beam_size).zero_()
             beam_logprobs_sum = torch.zeros(beam_size) # running sum of logprobs for each beam
             done_beams = []
-            weights = []
+
             for t in range(1):
                 if t == 0: # input <bos>
                     it = fc_feats.data.new(beam_size).long().zero_()
                     xt = self.embed(Variable(it, requires_grad=False))
 
-                output, state, weight = self.core(xt, tmp_fc_feats, tmp_att_feats, state)
+                output, state, _ = self.core(xt, tmp_fc_feats, tmp_att_feats, state)
                 logprobs = F.log_softmax(self.logit(self.dropout(output)))
-                weights.append(weight)
 
-            self.done_beams[k] = self.beam_search(state, logprobs, tmp_fc_feats, tmp_att_feats, opt=opt)
-            seq[:, k], _ = self.done_beams[k][0]['seq'] # the first beam has highest cumulative score
+            self.done_beams[k], weight = self.beam_search(state, logprobs, tmp_fc_feats, tmp_att_feats, opt=opt)
+            weights.append(weight)
+            seq[:, k]= self.done_beams[k][0]['seq'] # the first beam has highest cumulative score
             seqLogprobs[:, k] = self.done_beams[k][0]['logps']
         # return the samples and their log likelihoods
         return seq.transpose(0, 1), seqLogprobs.transpose(0, 1), weights
