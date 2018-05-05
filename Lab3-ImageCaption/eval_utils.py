@@ -135,7 +135,7 @@ def eval_split(model, crit, loader, eval_kwargs={}):
                 plt.clf()
                 plt.subplot(4, 5, 1)
                 plt.imshow(origin_img)
-                # alphas = weights[k]
+                alphas = weights[k]
                 plt.axis('off')
                 for t in range(len(words)):
                     if t > 16:
@@ -145,7 +145,7 @@ def eval_split(model, crit, loader, eval_kwargs={}):
                     plt.imshow(origin_img)
                     alpha = alphas[t]
                     # print(alpha)# 196
-                    index = Variable(torch.cuda.LongTensor([k*loader.seq_per_img]))
+                    index = Variable(torch.cuda.LongTensor(0))
                     # print(index)
                     alpha = torch.index_select(alpha, 0, index)
                     alpha = alpha.view(-1,14).cpu().data.numpy()
