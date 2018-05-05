@@ -134,9 +134,10 @@ class OldModel(CaptionModel):
             seq[:, k]= self.done_beams[k][0]['seq'] # the first beam has highest cumulative score
             seqLogprobs[:, k] = self.done_beams[k][0]['logps']
         # return the samples and their log likelihoods
-        print('print dim of weights in OldModel')
-        print(len(weights))
-        print(weights[0].size())
+        # print('print dim of weights in OldModel')
+        # print(len(weights))
+        # print(weights[0].size())
+        # this weight is 10 (batch) * 2 * 196 (14 x 14 feature map)
         return seq.transpose(0, 1), seqLogprobs.transpose(0, 1), weights
 
     def sample(self, fc_feats, att_feats, opt={}):
