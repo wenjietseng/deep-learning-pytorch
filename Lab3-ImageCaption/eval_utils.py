@@ -109,9 +109,9 @@ def eval_split(model, crit, loader, eval_kwargs={}):
         fc_feats, att_feats = tmp
         # forward the model to also get generated samples for each image
         seq, state, weights = model.sample(fc_feats, att_feats, eval_kwargs)
-        # print("print in eval_utils")
-        # print(len(weights))
-        # print(weights[0].size())
+        print("print in eval_utils")
+        print(len(weights))
+        print(weights[0].size())
         sents = utils.decode_sequence(loader.get_vocab(), seq)
 
         for k, sent in enumerate(sents):
