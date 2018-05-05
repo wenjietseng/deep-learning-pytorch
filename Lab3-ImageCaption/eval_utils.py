@@ -19,7 +19,8 @@ import misc.utils as utils
 from PIL import Image
 import skimage.transform
 from matplotlib import pyplot as plt
-plt.ioff()
+import matplotlib
+matplotlib.use('Agg')
 
 
 def language_eval(dataset, preds, model_id, split):
