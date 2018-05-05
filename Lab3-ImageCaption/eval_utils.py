@@ -143,6 +143,7 @@ def eval_split(model, crit, loader, eval_kwargs={}):
                     alpha = alphas[t]
                     index = Variable(torch.cuda.LongTensor([k*loader.seq_per_img]))
                     alpha = torch.index_select(alpha, 0, index)
+                    print(alpha)
                     alpha = alpha.view(-1,14).cpu().data.numpy()
                     alps = resize(alpha, (origin_img.size[1], origin_img.size[0]))
                     plt.imshow(alps, alpha=0.7)
