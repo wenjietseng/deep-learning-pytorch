@@ -131,7 +131,7 @@ def eval_split(model, crit, loader, eval_kwargs={}):
                 plt.subplot(4, 5, 1)
                 plt.imshow(origin_img)
                 plt.axis('off')
-                # alphas = alphas[k]
+                alphas = weights[k]
                 print(alphas)
                 for t in range(len(words)):
                     if t > 18:
