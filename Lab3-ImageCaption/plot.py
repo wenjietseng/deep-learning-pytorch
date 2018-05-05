@@ -4,7 +4,7 @@ import csv
 
 # --- requirment 1 ---
 # training loss
-loss_show_attend_tell = open('./topdown.csv', 'r')
+loss_show_attend_tell = open('./showAttendTell.csv', 'r')
 def read_table(file):
     dta = []
     for line in csv.reader(file):
@@ -19,13 +19,13 @@ def get_loss(dta):
 
 show_att_tell_dta = get_loss(read_table(loss_show_attend_tell))
 
-# plt.subplots()
-plt.plot(range(56644), show_att_tell_dta, label="Image")
-# plt.ylim([0., ])
-plt.legend()
-plt.xlabel("Iteration (log scale)")
+plt.subplots()
+plt.plot(range(56644), show_att_tell_dta, label="Show, Attend and Tell")
+# plt.ylim([0., 10])
+# plt.legend()
+plt.xlabel("Iteration")
 # plt.xscale("log")
-plt.ylabel('MSE')
-plt.savefig("topdown.png", dpi=300, bbox_inches='tight')
+plt.ylabel('Training Loss')
+plt.savefig("showAttendTell.png", dpi=300, bbox_inches='tight')
 plt.close()
 print(min(show_att_tell_dta))
