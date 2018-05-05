@@ -113,6 +113,8 @@ def eval_split(model, crit, loader, eval_kwargs={}):
         print(len(weights))
         print(len(weights[0]))
         print(len(weights[1]))
+        print(len(weights[2]))
+    
         sents = utils.decode_sequence(loader.get_vocab(), seq)
 
         for k, sent in enumerate(sents):
