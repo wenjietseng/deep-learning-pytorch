@@ -136,7 +136,7 @@ class OldModel(CaptionModel):
         # return the samples and their log likelihoods
         print('print dim of weights in OldModel')
         print(len(weights))
-        print(weights[0].size)
+        print(weights[0].size())
         return seq.transpose(0, 1), seqLogprobs.transpose(0, 1), weights
 
     def sample(self, fc_feats, att_feats, opt={}):
