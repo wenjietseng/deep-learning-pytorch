@@ -145,7 +145,7 @@ def eval_split(model, crit, loader, eval_kwargs={}):
                     plt.imshow(origin_img)
                     alpha = alphas[t]
                     # print(alpha)# 196
-                    index = Variable(torch.cuda.LongTensor(0))
+                    index = Variable(torch.cuda.LongTensor([0]))
                     # print(index)
                     alpha = torch.index_select(alpha, 0, index)
                     alpha = alpha.view(-1,14).cpu().data.numpy()
