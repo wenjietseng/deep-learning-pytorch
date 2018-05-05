@@ -111,7 +111,8 @@ def eval_split(model, crit, loader, eval_kwargs={}):
         seq, state, weights = model.sample(fc_feats, att_feats, eval_kwargs)
         print("print in eval_utils")
         print(len(weights))
-        print(weights[0].size())
+        print(len(weights[0])
+        print(weights[0][0].size())
         sents = utils.decode_sequence(loader.get_vocab(), seq)
 
         for k, sent in enumerate(sents):
