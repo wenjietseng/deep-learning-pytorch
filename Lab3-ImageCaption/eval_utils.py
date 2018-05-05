@@ -109,12 +109,14 @@ def eval_split(model, crit, loader, eval_kwargs={}):
         fc_feats, att_feats = tmp
         # forward the model to also get generated samples for each image
         seq, state, weights = model.sample(fc_feats, att_feats, eval_kwargs)
-        print("print in eval_utils")
-        print(len(weights))
-        print(len(weights[0])
-        print(weights[0][0].size())
+        # print("print in eval_utils")
+        # print(len(weights))
+        # print(len(weights[0]))
+        # print(weights[0][0].size())
+        # 10 (batch) x 16 (words) x 2 x 196 (14 x 14 feature)
         sents = utils.decode_sequence(loader.get_vocab(), seq)
-
+        # print(sents)
+        
         for k, sent in enumerate(sents):
             entry = {'image_id': data['infos'][k]['id'], 'caption': sent}
             if eval_kwargs.get('dump_path', 0) == 1:
@@ -141,7 +143,7 @@ def eval_split(model, crit, loader, eval_kwargs={}):
                     plt.subplot(4, 5, t + 2)
                     plt.text(0, 1, '%s' % (words[t]), color='black', backgroundcolor='white', fontsize=8)
                     plt.imshow(origin_img)
-                    alpha = alphas # [t]
+                    alpha = alphas[t]
                     index = Variable(torch.cuda.LongTensor([k*loader.seq_per_img]))
                     alpha = torch.index_select(alpha, 0, index)
                     alpha = alpha.view(-1,14).cpu().data.numpy()
