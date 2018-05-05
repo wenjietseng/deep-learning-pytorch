@@ -122,6 +122,6 @@ class CaptionModel(nn.Module):
             
             
         done_beams = sorted(done_beams, key=lambda x: -x['p'])[:beam_size]
-        print('print weights in CaptionModel')
-        print(weights)
+        # print('print weights in CaptionModel')
+        # print(weights)
         return done_beams, weights
