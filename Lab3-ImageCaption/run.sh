@@ -13,7 +13,7 @@
 # echo "eval show attend tell"
 python2 eval.py --model ./log_showAttendTell/model-best.pth \
 --infos_path ./log_showAttendTell/infos_showAttendTell-best.pkl \
---image_folder ./eval_img --num_images 50
+--image_folder ./eval_img --num_images -1
 
 # # eval karpathy's test split
 # echo "karpathy's test split"

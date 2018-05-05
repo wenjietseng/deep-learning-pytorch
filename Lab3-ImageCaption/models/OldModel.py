@@ -129,7 +129,7 @@ class OldModel(CaptionModel):
                 weights.append(weight)
 
             self.done_beams[k] = self.beam_search(state, logprobs, tmp_fc_feats, tmp_att_feats, opt=opt)
-            seq[:, k], _ = self.done_beams[k][0]#['seq'] # the first beam has highest cumulative score
+            seq[:, k], _ = self.done_beams[k][0]['seq'] # the first beam has highest cumulative score
             seqLogprobs[:, k] = self.done_beams[k][0]['logps']
         # return the samples and their log likelihoods
         return seq.transpose(0, 1), seqLogprobs.transpose(0, 1), weights
