@@ -146,7 +146,7 @@ def eval_split(model, crit, loader, eval_kwargs={}):
                     alpha = alpha.view(-1,14).cpu().data.numpy()
                     print("print alpha in each word")
                     print(alpha)
-                    #alps = resize(alpha, (origin_img.size[1], origin_img.size[0]))
+                    alps = alpha.resize((origin_img.size[1], origin_img.size[0]))
                     plt.imshow(alps, alpha=0.7)
                     plt.axis('off')
                 plt.savefig('vis/att/' + str(len(predictions)) + '.jpg', dpi=200)
