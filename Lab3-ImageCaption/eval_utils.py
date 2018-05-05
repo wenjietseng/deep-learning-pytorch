@@ -144,7 +144,7 @@ def eval_split(model, crit, loader, eval_kwargs={}):
                     plt.subplot(4, 5, t + 2)
                     plt.text(0, 1, '%s' % (words[t]), color='black', backgroundcolor='white', fontsize=8)
                     plt.imshow(origin_img)
-                    alpha = alphas[t]
+                    alpha = alphas[t - 1]
                     # print(alpha)# 196
                     index = Variable(torch.cuda.LongTensor([0]))
                     # print(index)
