@@ -19,6 +19,7 @@ import misc.utils as utils
 from PIL import Image
 import skimage.transform
 from matplotlib import pyplot as plt
+from skimage.transform import resize
 
 def language_eval(dataset, preds, model_id, split):
     import sys
@@ -149,7 +150,7 @@ def eval_split(model, crit, loader, eval_kwargs={}):
                     # print(index)
                     alpha = torch.index_select(alpha, 0, index)
                     alpha = alpha.view(-1,14).cpu().data.numpy()
-                    alps = np.resize(alpha, (origin_img.size[1], origin_img.size[0]))
+                    alps = resize(alpha, (origin_img.size[1], origin_img.size[0]))
                     plt.imshow(alps, alpha=0.7)
                     plt.axis('off')
                 plt.savefig('vis/att/' + str(len(predictions)) + '.jpg', dpi=200)
