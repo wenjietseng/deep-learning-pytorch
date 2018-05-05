@@ -109,7 +109,7 @@ def eval_split(model, crit, loader, eval_kwargs={}):
         fc_feats, att_feats = tmp
         # forward the model to also get generated samples for each image
         seq, state, weights = model.sample(fc_feats, att_feats, eval_kwargs)
-        print(weights)
+        # print(weights)
         sents = utils.decode_sequence(loader.get_vocab(), seq)
 
         for k, sent in enumerate(sents):
@@ -131,7 +131,7 @@ def eval_split(model, crit, loader, eval_kwargs={}):
                 plt.subplot(4, 5, 1)
                 plt.imshow(origin_img)
                 plt.axis('off')
-                alphas = weights[k]
+                alphas = alphas[k]
                 print(alphas)
                 for t in range(len(words)):
                     if t > 18:
