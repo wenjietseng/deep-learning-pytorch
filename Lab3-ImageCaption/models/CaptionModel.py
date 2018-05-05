@@ -82,7 +82,7 @@ class CaptionModel(nn.Module):
         beam_seq_logprobs = torch.FloatTensor(self.seq_length, beam_size).zero_()
         beam_logprobs_sum = torch.zeros(beam_size) # running sum of logprobs for each beam
         done_beams = []
-
+        weights = []
         for t in range(self.seq_length):
             """pem a beam merge. that is,
             for every previous beam we now many new possibilities to branch out
@@ -118,8 +118,8 @@ class CaptionModel(nn.Module):
 
             # encode as vectors
             it = beam_seq[t]
-            logprobs, state, weights = self.get_logprobs_state(Variable(it.cuda()), *(args + (state,)))
-            
+            logprobs, state, weight = self.get_logprobs_state(Variable(it.cuda()), *(args + (state,)))
+            weights.append(weight)
             
         done_beams = sorted(done_beams, key=lambda x: -x['p'])[:beam_size]
         # print('print weights in CaptionModel')
