@@ -147,6 +147,7 @@ def eval_split(model, crit, loader, eval_kwargs={}):
                     print(alpha)
                     index = Variable(torch.cuda.LongTensor([k*loader.seq_per_img]))
                     alpha = torch.index_select(alpha, 0, index)
+                    print(alpha)
                     alpha = alpha.view(-1,14).cpu().data.numpy()
                     # print("print alpha in each word")
                     # print(alpha)
