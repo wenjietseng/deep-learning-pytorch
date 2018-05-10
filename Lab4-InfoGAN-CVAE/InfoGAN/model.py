@@ -65,11 +65,11 @@ class FrontEnd(nn.Module):
         nn.LeakyReLU(0.2, inplace=True),
     )
 
-    def forward(self, x):
+    def forward(self, input):
         if input.is_cuda and self.ngpu > 1:
             output = nn.parallel.data_parallel(self.main, input, range(self.ngpu))
         else:
-            output = self.main(x)
+            output = self.main(input)
         return output
 
 class Discriminator(nn.Module):
