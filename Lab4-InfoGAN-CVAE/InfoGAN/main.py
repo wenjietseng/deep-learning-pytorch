@@ -60,10 +60,10 @@ ngf = int(opt.ngf)
 ndf = int(opt.ndf)
 nc = 3
 
-fe = FrontEnd(ngpu).to(device)
-d = Discriminator(ngpu).to(device)
-q = Q(ngpu).to(device)
-g = Generator(ngpu).to(device)
+fe = FrontEnd(ngpu)
+d = Discriminator(ngpu)
+q = Q(ngpu)
+g = Generator(ngpu)
 
 for i in [fe, d, q, g]:
     i.cuda()
