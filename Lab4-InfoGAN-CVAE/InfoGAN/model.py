@@ -4,6 +4,7 @@ ngf = 64
 ndf = 64
 
 def weights_init(m):
+    """ custom weights initialization called on netG and netD """
     classname = m.__class__.__name__
     if classname.find('Conv') != -1:
         m.weight.data.normal_(0.0, 0.02)
