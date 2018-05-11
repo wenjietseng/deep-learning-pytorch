@@ -52,17 +52,18 @@ class Trainer:
     # con_c = torch.FloatTensor(self.batch_size, 2).cuda()
     noise = torch.FloatTensor(self.batch_size, 54).cuda()
 
-    print(real_x.size())
-    print(label.size())
-    print(dis_c.size())
-    print(noise.size())
-
-
     real_x = Variable(real_x)
     label = Variable(label, requires_grad=False)
     dis_c = Variable(dis_c)
     # con_c = Variable(con_c)
     noise = Variable(noise)
+
+
+    print(real_x.size())
+    print(label.size())
+    print(dis_c.size())
+    print(noise.size())
+
 
     criterionD = nn.BCELoss().cuda()
     criterionQ_dis = nn.CrossEntropyLoss().cuda()
