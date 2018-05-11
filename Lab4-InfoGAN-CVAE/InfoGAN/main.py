@@ -65,6 +65,9 @@ d = Discriminator(ngpu)
 q = Q(ngpu)
 g = Generator(ngpu)
 
+print(fe, d, q, g)
+
+
 for i in [fe, d, q, g]:
     i.cuda()
     i.apply(weights_init)
