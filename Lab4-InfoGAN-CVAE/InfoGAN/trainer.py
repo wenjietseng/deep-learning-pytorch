@@ -77,21 +77,21 @@ class Trainer:
     c = np.linspace(-1, 1, 10).reshape(1, -1)
     c = np.repeat(c, 10, 0).reshape(-1, 1)
 
-    print(c.shape)
+    # print(c.shape)
 
     c1 = np.hstack([c, np.zeros_like(c)])
     c2 = np.hstack([np.zeros_like(c), c])
 
-    print(c1.shape)
-    print(c2.shape)
+    # print(c1.shape)
+    # print(c2.shape)
 
     idx = np.arange(10).repeat(10)
     one_hot = np.zeros((100, 10)) # change to 80?
     one_hot[range(100), idx] = 1
     fix_noise = torch.Tensor(100, 54).normal_(0, 1)
 
-    print(one_hot.shape)
-    print(fix_noise.size())
+    # print(one_hot.shape)
+    # print(fix_noise.size())
 
     for epoch in range(80):
         for num_iters, batch_data in enumerate(dataloader, 0):
@@ -102,21 +102,13 @@ class Trainer:
             optimD.zero_grad()
             
             x, _ = batch_data
-            print(x.size())
-
 
             bs = x.size(0)
-            print(bs)
             real_x.data.resize_(x.size())
-            print(real_x.size())
             label.data.resize_(bs)
-            print(label.size())
             dis_c.data.resize_(bs, 10)
-            print(dis_c.size())
             # con_c.data.resize_(bs, 2)
             noise.data.resize_(bs, 54)
-            print(noise.size())
-
 
 
 
@@ -129,8 +121,12 @@ class Trainer:
 
             # train with fake part
             z, idx = self._noise_sample(dis_c, noise, bs) # remove con_c
+            print(z.size())
+            print(idx.shape)
             fake_x = self.G(z)
+            print(fake_x.size())
             fe_out2 = self.FE(fake_x.detach())
+            print(fe_out2.size())
             probs_fake = self.D(fe_out2)
             label.data.fill_(0)
             loss_fake = criterionD(probs_fake, label)
