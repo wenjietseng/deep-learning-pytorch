@@ -71,6 +71,7 @@ class FrontEnd(nn.Module):
             output = nn.parallel.data_parallel(self.main, input, range(self.ngpu))
         else:
             output = self.main(input)
+            print(output.size())
         return output
 
 class Discriminator(nn.Module):
