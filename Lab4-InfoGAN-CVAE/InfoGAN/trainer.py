@@ -114,6 +114,8 @@ class Trainer:
 
             real_x.data.copy_(x)
             fe_out1 = self.FE(real_x)
+            print(real_x.size())
+            print(fe_out1.size())
             probs_real = self.D(fe_out1)
             label.data.fill_(1)
             loss_real = criterionD(probs_real, label)
