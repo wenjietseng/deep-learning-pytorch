@@ -163,20 +163,20 @@ class Trainer:
 
             if num_iters % 100 == 0:
 
-            print('Epoch/Iter:{0}/{1}, Dloss: {2}, Gloss: {3}'.format(
-                epoch, num_iters, D_loss.data.cpu().numpy(),
-                G_loss.data.cpu().numpy())
-            )
+                print('Epoch/Iter:{0}/{1}, Dloss: {2}, Gloss: {3}'.format(
+                    epoch, num_iters, D_loss.data.cpu().numpy(),
+                    G_loss.data.cpu().numpy())
+                )
 
-            noise.data.copy_(fix_noise)
-            dis_c.data.copy_(torch.Tensor(one_hot))
+                noise.data.copy_(fix_noise)
+                dis_c.data.copy_(torch.Tensor(one_hot))
 
-            #   con_c.data.copy_(torch.from_numpy(c1))
-            z = torch.cat([noise, dis_c], 1).view(-1, 64, 1, 1) # remove con_c after dis_c
-            x_save = self.G(z)
-            save_image(x_save.data, './tmp/c1.png', nrow=10)
+                #   con_c.data.copy_(torch.from_numpy(c1))
+                z = torch.cat([noise, dis_c], 1).view(-1, 64, 1, 1) # remove con_c after dis_c
+                x_save = self.G(z)
+                save_image(x_save.data, './tmp/c1.png', nrow=10)
 
-            #   con_c.data.copy_(torch.from_numpy(c2))
-            z = torch.cat([noise, dis_c], 1).view(-1, 64, 1, 1) # remove con_c after dis_c
-            x_save = self.G(z)
-            save_image(x_save.data, './tmp/c2.png', nrow=10)
+                #   con_c.data.copy_(torch.from_numpy(c2))
+                z = torch.cat([noise, dis_c], 1).view(-1, 64, 1, 1) # remove con_c after dis_c
+                x_save = self.G(z)
+                save_image(x_save.data, './tmp/c2.png', nrow=10)
