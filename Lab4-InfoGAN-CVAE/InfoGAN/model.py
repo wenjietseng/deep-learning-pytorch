@@ -89,7 +89,7 @@ class Discriminator(nn.Module):
         else:
             output = self.main(input)
 
-        return output.view(-1, 1)
+        return output
 
 class Q(nn.Module):
     def __init__(self, ngpu):
