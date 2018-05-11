@@ -58,12 +58,10 @@ class Trainer:
     # con_c = Variable(con_c)
     noise = Variable(noise)
 
-
-    print(real_x.size())
-    print(label.size())
-    print(dis_c.size())
-    print(noise.size())
-
+    print(real_x.size()) # 64 x 1 x 28 x 28
+    print(label.size())  # 64
+    print(dis_c.size())  # 64 x 10
+    print(noise.size())  # 64 x 54
 
     criterionD = nn.BCELoss().cuda()
     criterionQ_dis = nn.CrossEntropyLoss().cuda()
@@ -79,14 +77,21 @@ class Trainer:
     c = np.linspace(-1, 1, 10).reshape(1, -1)
     c = np.repeat(c, 10, 0).reshape(-1, 1)
 
+    print(c.shape)
+
     c1 = np.hstack([c, np.zeros_like(c)])
     c2 = np.hstack([np.zeros_like(c), c])
+
+    print(c1.shape)
+    print(c2.shape)
 
     idx = np.arange(10).repeat(10)
     one_hot = np.zeros((100, 10)) # change to 80?
     one_hot[range(100), idx] = 1
     fix_noise = torch.Tensor(100, 54).normal_(0, 1)
 
+    print(one_hot.shape)
+    print(fix_noise.size())
 
     for epoch in range(80):
       for num_iters, batch_data in enumerate(dataloader, 0):
