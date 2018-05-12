@@ -114,6 +114,7 @@ class Trainer:
             fe_out1 = self.FE(real_x)
             print(fe_out1.size())
             probs_real = self.D(fe_out1)
+            print(probs_real.size())
             label.data.fill_(1)
             loss_real = criterionD(probs_real, label)
             loss_real.backward()
