@@ -145,7 +145,7 @@ class Generator(nn.Module):
         return output
 
 
-netG = Generator(ngpu)#.to(device)
+netG = Generator(ngpu).cuda()#.to(device)
 netG.apply(weights_init)
 if opt.netG != '':
     netG.load_state_dict(torch.load(opt.netG))
@@ -195,7 +195,7 @@ class Discriminator(nn.Module):
         return d_output.view(-1, 1).squeeze(1), q_output
 
 
-netD = Discriminator(ngpu)#.to(device)
+netD = Discriminator(ngpu).cuda()#.to(device)
 netD.apply(weights_init)
 if opt.netD != '':
     netD.load_state_dict(torch.load(opt.netD))
