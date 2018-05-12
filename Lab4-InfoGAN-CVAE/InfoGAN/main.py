@@ -211,10 +211,6 @@ c = np.repeat(c, 10, 0).reshape(-1, 1)
 c1 = np.hstack([c, np.zeros_like(c)])
 c2 = np.hstack([np.zeros_like(c), c])
 
-idx = np.arange(10).repeat(10)
-one_hot = np.zeros((opt.batchSize, 10))
-one_hot[range(opt.batchSize), idx] = 1
-fixed_noise = torch.randn(opt.batchSize, nz - 10, 1, 1, device=device)
 
 # this is for each train, we have to sample noise
 def _noise_sample(dis_c, noise, bs, device=device):
@@ -245,6 +241,8 @@ real_x = torch.autograd.Variable(real_x)
 label = torch.autograd.Variable(label)
 dis_c = torch.autograd.Variable(dis_c)
 noise = torch.autograd.Variable(noise)
+
+fixed_z, fixed_idx = _noise_sample(dis_c, noise, 64)
 
 for epoch in range(opt.niter):
     for i, data in enumerate(dataloader, 0):
@@ -300,7 +298,8 @@ for epoch in range(opt.niter):
             vutils.save_image(data,
                     '%s/real_samples.png' % opt.outf,
                     normalize=True)
-            fake = netG(fixed_noise)
+
+            fake = netG(fixed_z)
             vutils.save_image(fake.detach(),
                     '%s/fake_samples_epoch_%03d.png' % (opt.outf, epoch),
                     normalize=True)
