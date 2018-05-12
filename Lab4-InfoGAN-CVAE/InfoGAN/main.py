@@ -221,6 +221,8 @@ def _noise_sample(dis_c, noise, bs, device=device):
     c[range(bs), idx] = 1.0
 
     dis_c.data.copy_(torch.Tensor(c))
+    print(noise.size())
+    print(dis_c.size())
     z = torch.cat([noise, dis_c], 1).view(-1, 64, 1, 1)
 
     return z, idx
