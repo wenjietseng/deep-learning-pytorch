@@ -14,7 +14,7 @@ import torchvision.utils as vutils
 import csv
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--dataset', required=True, help='cifar10 | lsun | imagenet | folder | lfw | fake')
+parser.add_argument('--dataset', required=True, help='MNIST | cifar10 | lsun | imagenet | folder | lfw | fake')
 parser.add_argument('--dataroot', required=True, help='path to dataset')
 parser.add_argument('--workers', type=int, help='number of data loading workers', default=2)
 parser.add_argument('--batchSize', type=int, default=64, help='input batch size')
@@ -305,5 +305,8 @@ for epoch in range(opt.niter):
                     normalize=True)
 
     # do checkpointing
-    torch.save(netG.state_dict(), '%s/netG_epoch_%d.pth' % (opt.outf, epoch))
-    torch.save(netD.state_dict(), '%s/netD_epoch_%d.pth' % (opt.outf, epoch))
+    # torch.save(netG.state_dict(), '%s/netG_epoch_%d.pth' % (opt.outf, epoch))
+    # torch.save(netD.state_dict(), '%s/netD_epoch_%d.pth' % (opt.outf, epoch))
+
+torch.save(netG.state_dict(), '%s/netG_final.pth' % (opt.outf))
+torch.save(netD.state_dict(), '%s/netD_final.pth' % (opt.outf))
