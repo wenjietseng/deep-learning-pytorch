@@ -12,6 +12,7 @@ import torchvision.datasets as dset
 import torchvision.transforms as transforms
 import torchvision.utils as vutils
 import csv
+import numpy as np
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--dataset', required=True, help='MNIST | cifar10 | lsun | imagenet | folder | lfw | fake')
