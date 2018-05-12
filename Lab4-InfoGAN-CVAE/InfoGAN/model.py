@@ -78,7 +78,7 @@ class Discriminator(nn.Module):
         super(Discriminator, self).__init__()
         self.ngpu = ngpu
         self.main = nn.Sequential(
-            nn.Conv2d(512, 1, kernel_size=1, stride=1, bias=False),
+            nn.Conv2d(512, 1, kernel_size=4, stride=1, bias=False),
             nn.Sigmoid()
         )
 
@@ -86,7 +86,7 @@ class Discriminator(nn.Module):
         # if input.is_cuda and self.ngpu > 1:
             # output = nn.parallel.data_parallel(self.main, input, range(self.ngpu))
         # else:
-        output = self.main(input).squeeze()
+        output = self.main(input).view(-1, 1)
 
         return output
 
