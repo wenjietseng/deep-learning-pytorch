@@ -120,12 +120,8 @@ class Trainer:
 
             # train with fake part
             z, idx = self._noise_sample(dis_c, noise, bs) # remove con_c
-            print(z.size())
-            print(idx.shape)
             fake_x = self.G(z)
-            print(fake_x.size())
             fe_out2 = self.FE(fake_x.detach())
-            print(fe_out2.size())
             probs_fake = self.D(fe_out2)
             label.data.fill_(0)
             loss_fake = criterionD(probs_fake, label)
