@@ -39,10 +39,10 @@ class Generator(nn.Module):
         )
 
     def forward(self, input):
-        if input.is_cuda and self.ngpu > 1:
-            output = nn.parallel.data_parallel(self.main, input, range(self.ngpu))
-        else:
-            output = self.main(input)
+        # if input.is_cuda and self.ngpu > 1:
+            # output = nn.parallel.data_parallel(self.main, input, range(self.ngpu))
+        # else:
+        output = self.main(input)
         return output
 
 
@@ -67,11 +67,10 @@ class FrontEnd(nn.Module):
     )
 
     def forward(self, input):
-        if input.is_cuda and self.ngpu > 1:
-            output = nn.parallel.data_parallel(self.main, input, range(self.ngpu))
-        else:
-            output = self.main(input)
-            print(output.size())
+        # if input.is_cuda and self.ngpu > 1:
+            # output = nn.parallel.data_parallel(self.main, input, range(self.ngpu))
+        # else:
+        output = self.main(input)
         return output
 
 class Discriminator(nn.Module):
@@ -84,10 +83,10 @@ class Discriminator(nn.Module):
         )
 
     def forward(self, input):
-        if input.is_cuda and self.ngpu > 1:
-            output = nn.parallel.data_parallel(self.main, input, range(self.ngpu))
-        else:
-            output = self.main(input)
+        # if input.is_cuda and self.ngpu > 1:
+            # output = nn.parallel.data_parallel(self.main, input, range(self.ngpu))
+        # else:
+        output = self.main(input).view(-1, 1)
 
         return output
 
@@ -102,11 +101,8 @@ class Q(nn.Module):
         )
     
     def forward(self, input):
-        if input.is_cuda and self.ngpu > 1:
-            output = nn.parallel.data_parallel(self.main, input, range(self.ngpu))
-        else:
-            output = self.main(input)
-
-        return output.view(-1, 1).squeeze(1)
-
-
+        # if input.is_cuda and self.ngpu > 1:
+            # output = nn.parallel.data_parallel(self.main, input, range(self.ngpu))
+        # else:
+        disc_logits = self.main(input)
+        return disc_logits

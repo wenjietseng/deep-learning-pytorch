@@ -96,9 +96,6 @@ class Trainer:
 
     for epoch in range(80):
         for num_iters, batch_data in enumerate(dataloader, 0):
-            ############################
-            # (1) Update D network: maximize log(D(x)) + log(1 - D(G(z)))
-            ###########################
             # train with real part
             optimD.zero_grad()
             
@@ -136,9 +133,6 @@ class Trainer:
             D_loss = loss_real + loss_fake
 
             optimD.step()
-            ############################
-            # (2) Update G network: maximize log(D(G(z)))
-            ###########################        
             # G and Q part
             optimG.zero_grad()
 
@@ -148,7 +142,7 @@ class Trainer:
 
             reconstruct_loss = criterionD(probs_fake, label)
             
-            q_logits, q_mu, q_var = self.Q(fe_out)
+            q_logits = self.Q(fe_out)
             class_ = torch.LongTensor(idx).cuda()
             target = Variable(class_)
             dis_loss = criterionQ_dis(q_logits, target)
