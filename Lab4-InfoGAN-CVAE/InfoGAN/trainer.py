@@ -116,7 +116,9 @@ class Trainer:
             probs_real = self.D(fe_out1)
             print(probs_real.size())
             label.data.fill_(1)
+            print(label.size())
             loss_real = criterionD(probs_real, label)
+            print(loss_real)
             loss_real.backward()
 
             # train with fake part
