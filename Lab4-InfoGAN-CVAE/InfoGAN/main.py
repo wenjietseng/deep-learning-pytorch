@@ -215,7 +215,7 @@ c2 = np.hstack([np.zeros_like(c), c])
 # this is for each train, we have to sample noise
 def _noise_sample(dis_c, noise, bs, device=device):
 
-    noise = torch.randn(64, 54, 1, 1, device)
+    noise = torch.randn((64, 54, 1, 1), device)
     idx = np.random.randint(10, size=bs)
     c = np.zeros((bs, 10))
     c[range(bs), idx] = 1.0
