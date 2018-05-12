@@ -215,7 +215,7 @@ c2 = np.hstack([np.zeros_like(c), c])
 # this is for each train, we have to sample noise
 def _noise_sample(dis_c, noise, bs, device=device):
 
-    noise = torch.randn(opt.batchSize, 54, 1, 1, device=device)
+    noise = torch.randn(64, 54, 1, 1, device)
     idx = np.random.randint(10, size=bs)
     c = np.zeros((bs, 10))
     c[range(bs), idx] = 1.0
@@ -242,7 +242,7 @@ label = torch.autograd.Variable(label)
 dis_c = torch.autograd.Variable(dis_c)
 noise = torch.autograd.Variable(noise)
 
-fixed_z, fixed_idx = _noise_sample(dis_c, noise, 64)
+fixed_z, fixed_idx = _noise_sample(dis_c, noise, 64, device=device)
 
 for epoch in range(opt.niter):
     for i, data in enumerate(dataloader, 0):
