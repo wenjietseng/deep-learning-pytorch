@@ -215,16 +215,16 @@ c2 = np.hstack([np.zeros_like(c), c])
 # this is for each train, we have to sample noise
 def _noise_sample(dis_c, noise, bs, device=device):
 
-    noise = torch.randn(64, 54)
+    noise = torch.randn(64, 54).cuda()
     idx = np.random.randint(10, size=bs)
     c = np.zeros((bs, 10))
     c[range(bs), idx] = 1.0
-    c = torch.FloatTensor(c)
+    c = torch.cuda.FloatTensor(c)
     # dis_c.data.copy_(torch.Tensor(c))
     # print(noise.size())
     # print(dis_c.size())
     z = torch.cat([noise, c], 1).view(-1, 64, 1, 1)
-    print(z.size())
+    # print(z.size())
 
     return z, idx
 
@@ -235,10 +235,10 @@ fake_label = 0
 optimizerD = optim.Adam(netD.parameters(), lr=opt.lr, betas=(opt.beta1, 0.999))
 optimizerG = optim.Adam(netG.parameters(), lr=1e-3, betas=(opt.beta1, 0.999))
 
-real_x = torch.FloatTensor(opt.batchSize, 1, opt.imageSize, opt.imageSize).cuda()
-label = torch.FloatTensor(opt.batchSize).cuda()
-dis_c = torch.FloatTensor(opt.batchSize, 10).cuda()
-noise = torch.FloatTensor(opt.batchSize, 54).cuda()
+real_x = torch.cuda.FloatTensor(opt.batchSize, 1, opt.imageSize, opt.imageSize).cuda()
+label = torch.cuda.FloatTensor(opt.batchSize).cuda()
+dis_c = torch.cuda.FloatTensor(opt.batchSize, 10).cuda()
+noise = torch.cuda.FloatTensor(opt.batchSize, 54).cuda()
 
 real_x = torch.autograd.Variable(real_x)
 label = torch.autograd.Variable(label)
