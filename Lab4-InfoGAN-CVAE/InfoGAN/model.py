@@ -86,7 +86,7 @@ class Discriminator(nn.Module):
         # if input.is_cuda and self.ngpu > 1:
             # output = nn.parallel.data_parallel(self.main, input, range(self.ngpu))
         # else:
-        output = self.main(input).view(-1, 1)
+        output = self.main(input).squeeze()
 
         return output
 
