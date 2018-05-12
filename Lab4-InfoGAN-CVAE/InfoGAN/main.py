@@ -79,7 +79,7 @@ elif opt.dataset == 'fake':
     dataset = dset.FakeData(image_size=(3, opt.imageSize, opt.imageSize),
                             transform=transforms.ToTensor())
 elif opt.dataset == 'MNIST':
-    dataset = dset.MNIST('~/Data',
+    dataset = dset.MNIST(root=opt.dataroot,
                          transform=transforms.Compose([
                             transforms.Resize(opt.imageSize),
                             transforms.ToTensor(),
@@ -96,7 +96,8 @@ ngf = int(opt.ngf)
 ndf = int(opt.ndf)
 nc = 1
 
-# write 
+# write loss
+loss_writer = csv.writer(open("./loss_and_probs.csv", 'w'))
 
 # custom weights initialization called on netG and netD
 def weights_init(m):
@@ -199,15 +200,33 @@ if opt.netD != '':
     netD.load_state_dict(torch.load(opt.netD))
 print(netD)
 
-d_criterion = nn.BCELoss()
-q_criterion = nn.CrossEntropyLoss()
+d_criterion = nn.BCELoss().cuda()
+q_criterion = nn.CrossEntropyLoss().cuda()
 
+# fixed noise: 54 ~ N(0,1) + 10 one-hot encoder
+c = np.linspace(-1, 1, 10).reshape(1, -1)
+c = np.repeat(c, 10, 0).reshape(-1, 1)
 
+c1 = np.hstack([c, np.zeros_like(c)])
+c2 = np.hstack([np.zeros_like(c), c])
+
+idx = np.arange(10).repeat(10)
+one_hot = np.zeros((opt.batchSize, 10))
+one_hot[range(opt.batchSize), idx] = 1
 fixed_noise = torch.randn(opt.batchSize, nz - 10, 1, 1, device=device)
-idx = np.random.randint(10, size=opt.batchSize)
-c = np.zeros((opt.batchSize, 10))
-c[range(opt.batchSize)] = 1.0
 
+# this is for each train, we have to sample noise
+def _noise_sample(dis_c, noise, bs, device=device):
+
+    noise = torch.randn(opt.batchSize, 54, 1, 1, device=device)
+    idx = np.random.randint(10, size=bs)
+    c = np.zeros((bs, 10))
+    c[range(bs), idx] = 1.0
+
+    dis_c.data.copy_(torch.Tensor(c))
+    z = torch.cat([noise, dis_c], 1).view(-1, 64, 1, 1)
+
+    return z, idx
 
 real_label = 1
 fake_label = 0
@@ -216,49 +235,68 @@ fake_label = 0
 optimizerD = optim.Adam(netD.parameters(), lr=opt.lr, betas=(opt.beta1, 0.999))
 optimizerG = optim.Adam(netG.parameters(), lr=1e-3, betas=(opt.beta1, 0.999))
 
+real_x = torch.FloatTensor(opt.batchSize, 1, opt.imageSize, opt.imageSize).cuda()
+label = torch.FloatTensor(opt.batchSize).cuda()
+dis_c = torch.FloatTensor(opt.batchSize, 10).cuda()
+noise = torch.FloatTensor(opt.batchSize, 54).cuda()
+
+real_x = torch.autograd.Variable(real_x)
+label = torch.autograd.Variable(label)
+dis_c = torch.autograd.Variable(dis_c)
+noise = torch.autograd.Variable(noise)
+
 for epoch in range(opt.niter):
     for i, data in enumerate(dataloader, 0):
-        ############################
-        # (1) Update D network: maximize log(D(x)) + log(1 - D(G(z)))
-        ###########################
-        # train with real
-        netD.zero_grad()
-        real_cpu = data[0].to(device)
-        batch_size = real_cpu.size(0)
-        label = torch.full((batch_size,), real_label, device=device)
+        # real part
+        optimizerD.zero_grad()
+        x, _ = data
 
-        d_out, q_out = netD(real_cpu)
-        errD_real = d_criterion(d_out, label)
-        errD_real.backward()
-        D_x = d_out.mean().item()
+        bs = x.size(0)
+        real_x.data.resize_(x.size())
+        label.data.resize_(bs)
+        dis_c.data.resize_(bs, 10)
+        noise.data.resize_(bs, 54)
+        
+        real_x.data.copy_(x)
+        d_out1, q_out1 = netD(real_x) # d_out1 is probs_real
+        label.data.fill_(1)
+        loss_real = d_criterion(d_out1, label)
+        loss_real.backward()
 
-        # train with fake
-        noise = torch.randn(batch_size, nz, 1, 1, device=device)
-        fake = netG(noise)
-        label.fill_(fake_label)
-        output = netD(fake.detach())
-        errD_fake = criterion(output, label)
-        errD_fake.backward()
-        D_G_z1 = output.mean().item()
-        errD = errD_real + errD_fake
+        # fake part
+        z, idx = _noise_sample(dis_c, noise, bs)
+        fake_x = netG(z)
+        d_out2, q_out2 = netD(fake_x.detach()) # d_out2 is probs_fake
+        label.data.fill_(0)
+        loss_fake = d_criterion(d_out2, label)
+        loss_fake.backward()
+
+        D_loss = loss_real + loss_fake
         optimizerD.step()
 
-        ############################
-        # (2) Update G network: maximize log(D(G(z)))
-        ###########################
-        netG.zero_grad()
-        label.fill_(real_label)  # fake labels are real for generator cost
-        output = netD(fake)
-        errG = criterion(output, label)
-        errG.backward()
-        D_G_z2 = output.mean().item()
-        optimizerG.step()
+        # G and Q part
+        optimizerG.zero_grad()
 
-        print('[%d/%d][%d/%d] Loss_D: %.4f Loss_G: %.4f D(x): %.4f D(G(z)): %.4f / %.4f'
+        d_out3, q_out3 = netD(fake_x)
+        label.data.fill_(1.0)
+
+        reconstruct_loss = d_criterion(d_out3, label)
+        
+        class_ = torch.LongTensor(idx).cuda()
+        target = torch.autograd.Variable(class_)
+        Q_loss = q_criterion(q_out3, target)
+        
+        G_loss = reconstruct_loss + Q_loss
+        G_loss.backward()
+        optimizerG.step()        
+
+        print('[%d/%d][%d/%d] D_loss: %.4f G_loss: %.4f Q_loss: %.4f prob_real: %.4f prob_fake_before: %.4f prob_fake_after: %.4f'
               % (epoch, opt.niter, i, len(dataloader),
-                 errD.item(), errG.item(), D_x, D_G_z1, D_G_z2))
+                 D_loss.item(), G_loss.item(), Q_loss.item(), d_out1, d_out2, d_out3))
         if i % 100 == 0:
-            vutils.save_image(real_cpu,
+            loss_writer.writerow([epoch, opt.niter, i, len(dataloader),
+                 D_loss.item(), G_loss.item(), Q_loss.item(), d_out1, d_out2, d_out3])
+            vutils.save_image(data,
                     '%s/real_samples.png' % opt.outf,
                     normalize=True)
             fake = netG(fixed_noise)
