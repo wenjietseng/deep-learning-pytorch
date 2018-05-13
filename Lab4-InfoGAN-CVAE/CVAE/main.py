@@ -128,7 +128,7 @@ def train(epoch):
     train_loss = 0
     for batch_idx, (data, y) in enumerate(train_loader):
         data = data.to(device)
-        print(y)
+        print(y.size())
         print(data.size())
         optimizer.zero_grad()
         recon_batch, mu, logvar = model(data)
