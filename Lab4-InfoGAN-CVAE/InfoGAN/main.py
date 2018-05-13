@@ -97,11 +97,12 @@ def _noise_sample(batchSize, nz, nc, device=device):
     idx = np.random.randint(nc, size=batchSize)
     c = np.zeros((batchSize, nc))
     c[range(batchSize), idx] = 1.0
+    c = np.asarray(c)
 
     noise = torch.randn(batchSize, nz - nc, device=device)
-    c_tensor = torch.cuda.FloatTensor(batchSize, nc).cuda()
+    c_tensor = torch.FloatTensor(c).cuda()
     # error combine should be same type, here: FloatTensor + FloatTensor
-    c_tensor.data.copy_(torch.Tensor(c))
+    print(noise.size(), c_tensor.size())
     z = torch.cat([noise, c_tensor], 1).view(-1, nz, 1, 1)
     # print(z.size())
     # z = torch.autograd.Variable(z)
