@@ -77,7 +77,7 @@ class CVAE(nn.Module):
         self.fc4 = nn.Linear(400, 784)
 
     def encode(self, x):
-        out = self.conv1(x)
+        out = self.conv1(x.view(-1, 784))
         out = self.fc1(out)
         return self.fc21(out), self.fc22(out)
 
