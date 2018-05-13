@@ -304,7 +304,7 @@ for epoch in range(opt.niter):
         if i % 100 == 0:
             loss_writer.writerow([epoch, opt.niter, i, len(dataloader),
                  D_loss.data[0], G_loss.data[0], Q_loss.data[0], probs_real.data[0],
-                 probs_fake_before_G.data[0], probs_fake_after_G.data[0])
+                 probs_fake_before_G.data[0], probs_fake_after_G.data[0]]])
             vutils.save_image(data,
                     '%s/real_samples.png' % opt.outf,
                     normalize=True)
