@@ -141,16 +141,22 @@ def train(epoch):
         data = data.to(device)
         # add one-hot to each pixel of img
         one_hot_lst = one_hot_handler(y)
-        print("-------------------")
-        print(y)
-        print(one_hot_lst)
-        print("-------------------")
+        # print("-------------------")
+        # print(y)
+        # print(one_hot_lst)
+        # print("-------------------")
 
-        one_hot_tensor = torch.Tensor(one_hot_lst).view(-1, 10, 1, 1).cuda() # batch_size x 10 x 1 x 1
+        # one_hot_tensor = torch.Tensor(one_hot_lst).view(-1, 10, 1, 1).cuda() # batch_size x 10 x 1 x 1
         # print(one_hot_tensor.size())
-        one_hot_tensor = one_hot_tensor.expand(-1, -1, 28, 28) # batch_size x 10 x 28 x 28
+        # one_hot_tensor = one_hot_tensor.expand(-1, -1, 28, 28) # batch_size x 10 x 28 x 28
         # print(one_hot_tensor.size())
-        new_data = torch.cat((data, one_hot_tensor), dim=1)
+        # new_data = torch.cat((data, one_hot_tensor), dim=1)
+        one_hot_tensor = torch.Tensor(one_hot_lst).unsqueeze(-1)
+        print(one_hot_tensor.size())
+        one_hot_tensor = torch.Tensor(one_hot_lst).unsqueeze(-1)
+        print(one_hot_tensor.size())
+
+
         # print(new_data.size())
         # print(new_data.size()) 128 x 11 x 28 x 28
 
