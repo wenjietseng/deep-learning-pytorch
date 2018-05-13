@@ -28,5 +28,13 @@ netG.cuda()
 netG.eval()
 
 # generate a z as lab4 desciption
-
 idx = np.random.randint(nc, size=batch_size)
+c = np.zeros((batch_size, nc))
+c[range(batch_size), idx] = 1.0
+
+noise = torch.randn(batch_size, nz - nc, device=device)
+c_tensor = torch.cuda.FloatTensor(batch_size, nc).cuda()
+# error combine should be same type, here: FloatTensor + FloatTensor
+c_tensor.data.copy_(torch.Tensor(c))
+z = torch.cat([noise, c_tensor], 1).view(-1, nz, 1, 1)
+print(z.size())
