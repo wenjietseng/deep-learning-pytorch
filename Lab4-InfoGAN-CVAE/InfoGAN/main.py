@@ -223,7 +223,7 @@ def _noise_sample(dis_c, noise, bs, device=device):
     # print(dis_c.size())
     z = torch.cat([noise, c], 1).view(-1, 64, 1, 1)
     # print(z.size())
-
+    z = torch.autograd.Variable(z)
     return z, idx
 
 real_label = 1
