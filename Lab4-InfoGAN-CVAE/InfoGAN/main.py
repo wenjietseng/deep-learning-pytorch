@@ -189,7 +189,7 @@ class Discriminator(nn.Module):
             output = nn.parallel.data_parallel(self.main, input, range(self.ngpu))
         else:
             output = self.main(input)
-            print(output.view(-1, 1).size())
+            print(output.view(64, -1, 1).size())
             d_output = self.discriminator(output)
             
             q_output = self.Q(output.view(-1, 1))
