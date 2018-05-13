@@ -191,6 +191,7 @@ class Discriminator(nn.Module):
         if input.is_cuda and self.ngpu > 1:
             output = nn.parallel.data_parallel(self.main, input, range(self.ngpu))
         else:
+            print(input.size())
             output = self.main(input)
             # print(output.view(64, -1, 1, 1).size())
             # error resize outpur of discriminator to 64 x 8192 for Linear layer
