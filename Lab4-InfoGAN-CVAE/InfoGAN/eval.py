@@ -3,7 +3,7 @@ import torch
 import torch.backends.cudnn as cudnn
 import torchvision.utils as vutils
 from matplotlib import pyplot as plt
-from main_code import Generator
+from main import Generator
 import argparse
 
 parser = argparse.ArgumentParser()
