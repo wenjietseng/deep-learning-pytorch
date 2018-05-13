@@ -122,6 +122,15 @@ def loss_function(recon_x, x, mu, logvar):
 
     return BCE + KLD
 
+def one_hot_handler(label, D=10):
+    """ Return a list of one-hot vectors """
+    one_hot_lst = []
+    for idx in label:
+        one_hot = np.zeros((10), dtype=float)
+        one_hot[idx.item()] = 1.0
+        one_hot_lst.append(one_hot)
+    return np.asarray(one_hot_lst)
+
 
 def train(epoch):
     model.train()
@@ -130,12 +139,8 @@ def train(epoch):
         data = data.to(device)
         
         # add one-hot to each pixel of img
-        one_hot_lst = []
-        for idx in y:
-            one_hot = np.zeros((10), dtype=float)
-            one_hot[idx.item()] = 1.0
-            one_hot_lst.append(one_hot)
-        one_hot_lst = np.asarray(one_hot_lst)
+        one_hot_lst = one_hot_handler(y)
+
         one_hot_tensor = torch.Tensor(one_hot_lst).view(-1, 10, 1, 1).cuda() # batch_size x 10 x 1 x 1
         one_hot_tensor = one_hot_tensor.expand(-1, -1, 28, 28) # batch_size x 10 x 28 x 28
         new_data = torch.cat((data, one_hot_tensor), dim=1)
@@ -161,9 +166,16 @@ def test(epoch):
     model.eval()
     test_loss = 0
     with torch.no_grad():
-        for i, (data, _) in enumerate(test_loader):
+        for i, (data, y) in enumerate(test_loader):
             data = data.to(device)
-            recon_batch, mu, logvar = model(data)
+            one_hot_lst = one_hot_handler(y)
+
+            one_hot_tensor = torch.Tensor(one_hot_lst).view(-1, 10, 1, 1).cuda() # batch_size x 10 x 1 x 1
+            one_hot_tensor = one_hot_tensor.expand(-1, -1, 28, 28) # batch_size x 10 x 28 x 28
+            new_data = torch.cat((data, one_hot_tensor), dim=1)
+            
+            
+            recon_batch, mu, logvar = model(new_data, one_hot_lst)
             test_loss += loss_function(recon_batch, data, mu, logvar).item()
             if i == 0:
                 n = min(data.size(0), 8)
