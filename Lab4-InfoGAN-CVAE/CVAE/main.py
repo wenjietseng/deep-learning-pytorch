@@ -97,6 +97,8 @@ class CVAE(nn.Module):
 
     def forward(self, x, c):
         mu, logvar = self.encode(x.view(-1, 11, 28, 28))
+        print(mu.mean().item())
+        print(logvar.mean().item())
         z = self.reparameterize(mu, logvar)
         c = torch.Tensor(c).cuda()
         # print(c.size())
