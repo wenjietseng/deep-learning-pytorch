@@ -250,6 +250,7 @@ fixed_z, fixed_idx = _noise_sample(dis_c, noise, 64, device=device)
 
 for epoch in range(opt.niter):
     for i, data in enumerate(dataloader, 0):
+        real_cpu = data[0].to(device)
         # real part
         optimizerD.zero_grad()
         x, _ = data
@@ -306,7 +307,7 @@ for epoch in range(opt.niter):
                  D_loss.data[0], G_loss.data[0], Q_loss.data[0], probs_real.data[0],
                  probs_fake_before_G.data[0], probs_fake_after_G.data[0]])
             
-            vutils.save_image(torch.Tensor(data),
+            vutils.save_image(real_cpu,
                     '%s/real_samples.png' % opt.outf,
                     normalize=True)
 
