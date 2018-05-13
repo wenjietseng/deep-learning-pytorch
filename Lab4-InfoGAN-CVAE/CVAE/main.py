@@ -31,17 +31,13 @@ device = torch.device("cuda" if args.cuda else "cpu")
 kwargs = {'num_workers': 1, 'pin_memory': True} if args.cuda else {}
 train_loader = torch.utils.data.DataLoader(
     datasets.MNIST('~/Data', train=True, download=True,
-                   transform=transforms.Compose([
-                            transforms.ToTensor(),
-                            transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
-                   ])),
+                   transform=transforms.ToTensor()
+                   ),
     batch_size=args.batch_size, shuffle=True, **kwargs)
 test_loader = torch.utils.data.DataLoader(
     datasets.MNIST('~/Data', train=False,                          
-                   transform=transforms.Compose([
-                            transforms.ToTensor(),
-                            transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
-                   ])),
+                   transform=transforms.ToTensor()
+                   ),
     batch_size=args.batch_size, shuffle=True, **kwargs)
 
 
@@ -159,12 +155,12 @@ def train(epoch):
         # print(one_hot_tensor.size())
         new_data = torch.cat((data, one_hot_tensor), dim=1)
 
-        print(new_data.size())
+        # print(new_data.size())
         # print(new_data.size()) 128 x 11 x 28 x 28
 
         optimizer.zero_grad()
         recon_batch, mu, logvar = model(new_data, one_hot_lst)
-        print(mu.mean().item(), logvar.mean().item())
+        # print(mu.mean().item(), logvar.mean().item())
         loss = loss_function(recon_batch.view(-1, 784), data, mu, logvar)
         loss.backward()
         train_loss += loss.item()
