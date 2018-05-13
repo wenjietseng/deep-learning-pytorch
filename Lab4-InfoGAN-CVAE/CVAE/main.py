@@ -191,8 +191,13 @@ def test(epoch):
 for epoch in range(1, args.epochs + 1):
     train(epoch)
     test(epoch)
-    with torch.no_grad():
-        sample = torch.randn(64, 20).to(device)
-        sample = model.decode(sample).cpu()
-        save_image(sample.view(64, 1, 28, 28),
-                   'results/sample_' + str(epoch) + '.png')
+    # eval
+    # with torch.no_grad():
+    #     sample = torch.randn(64, 20).to(device)
+    #     sample = model.decode(sample).cpu()
+    #     save_image(sample.view(64, 1, 28, 28),
+    #                'results/sample_' + str(epoch) + '.png')
+
+# csv record loss
+# eval
+# save best model
