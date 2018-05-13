@@ -143,10 +143,7 @@ def train(epoch):
 
         optimizer.zero_grad()
         recon_batch, mu, logvar = model(new_data, one_hot_lst)
-        print(recon_batch.size())
-        print(mu.size())
-        print(logvar.size())
-        loss = loss_function(recon_batch, data, mu, logvar)
+        loss = loss_function(recon_batch.view(-1, 784), data, mu, logvar)
         loss.backward()
         train_loss += loss.item()
         optimizer.step()
