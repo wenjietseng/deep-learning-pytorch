@@ -72,6 +72,7 @@ class CVAE(nn.Module):
             nn.UpsamplingNearest2d(scale_factor=2),
             nn.Conv2d(11, 3, 3, 1, 1),
             nn.ReLU(),
+            nn.Conv2d(3, 1, 3, 1, 1),
             nn.Sigmoid()
         )
 
