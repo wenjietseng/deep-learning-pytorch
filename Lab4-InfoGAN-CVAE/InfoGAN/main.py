@@ -262,6 +262,7 @@ for epoch in range(opt.niter):
         
         real_x.data.copy_(x)
         d_out1, q_out1 = netD(real_x) # d_out1 is probs_real
+        probs_real = d_out1.mean().item()
         label.data.fill_(1)
         loss_real = d_criterion(d_out1, label)
         loss_real.backward()
@@ -270,6 +271,7 @@ for epoch in range(opt.niter):
         z, idx = _noise_sample(dis_c, noise, bs)
         fake_x = netG(z)
         d_out2, q_out2 = netD(fake_x.detach()) # d_out2 is probs_fake
+        probs_fake = d_out2.mean.item()
         label.data.fill_(0)
         loss_fake = d_criterion(d_out2, label)
         loss_fake.backward()
@@ -298,7 +300,9 @@ for epoch in range(opt.niter):
         print(G_loss)
         print(Q_loss)
         print(d_out1)
+        print(probs_real)
         print(d_out2)
+        print(probs_fake)
         print(d_out3)
         print('[%d/%d][%d/%d] D_loss: %.4f G_loss: %.4f Q_loss: %.4f prob_real: %.4f prob_fake_before: %.4f prob_fake_after: %.4f'
               % (epoch, opt.niter, i, len(dataloader),
