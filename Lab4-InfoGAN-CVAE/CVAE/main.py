@@ -74,7 +74,6 @@ class CVAE(nn.Module):
             nn.ReLU(),
             nn.Sigmoid()
         )
-        self.fc4 = nn.Linear(400, 784)
 
     def encode(self, x):
         out = self.conv1(x)
@@ -89,18 +88,20 @@ class CVAE(nn.Module):
         else:
             return mu
 
-    def decode(self, z, c):
-        h3 = F.relu(self.fc3(z))
-        return F.sigmoid(self.fc4(h3))
+    def decode(self, z):
+        
+        h3 = self.fc3(z)
+        out = self.conv2(h3.view(-1, 2, 14, 14))
+        return out
 
     def forward(self, x, c):
         mu, logvar = self.encode(x.view(-1, 11, 28, 28))
         z = self.reparameterize(mu, logvar)
-        
         c = torch.Tensor(c).cuda()
-        print(c.size())
-        print(z.size())
-        return self.decode(z, c), mu, logvar
+        # print(c.size())
+        # print(z.size())
+        new_z = tensor.cat((z, c), dim=1)
+        return self.decode(new_z), mu, logvar
 
 
 model = CVAE().to(device)
