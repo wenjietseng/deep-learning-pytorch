@@ -18,7 +18,7 @@ if torch.cuda.is_available() and not opt.cuda:
 device = torch.device("cuda:0" if opt.cuda else "cpu")
 
 ngpu = 1
-nz = 54
+nz = 64
 ngf = 64
 ndf = 64
 nc = 10
@@ -76,7 +76,7 @@ c_tensor = torch.cuda.FloatTensor(batch_size, nc).cuda()
 # error combine should be same type, here: FloatTensor + FloatTensor
 c_tensor.data.copy_(torch.Tensor(c))
 z = torch.cat([noise, c_tensor], 1).view(-1, nz, 1, 1)
-print(z.size())
+# print(z.size())
 
 fake = netG(z)
 vutils.save_image(fake.detach().data, 'eval-out.png',
