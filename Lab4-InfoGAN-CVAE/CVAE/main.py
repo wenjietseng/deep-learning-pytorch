@@ -153,9 +153,10 @@ def train(epoch):
         # new_data = torch.cat((data, one_hot_tensor), dim=1)
         one_hot_tensor = torch.Tensor(one_hot_lst).unsqueeze(-1)
         print(one_hot_tensor.size())
-        one_hot_tensor = torch.Tensor(one_hot_lst).unsqueeze(-1)
+        one_hot_tensor = torch.unsqueeze(one_hot_tensor, -1)
         print(one_hot_tensor.size())
-
+        one_hot_tensor = one_hot_tensor.expand(-1, -1, 28, 28)
+        print(one_hot_tensor.size())
 
         # print(new_data.size())
         # print(new_data.size()) 128 x 11 x 28 x 28
