@@ -312,7 +312,7 @@ for epoch in range(opt.niter):
                     normalize=True)
 
             fake = netG(fixed_z)
-            vutils.save_image(fake,
+            vutils.save_image(fake.detach().data,
                     '%s/fake_samples_epoch_%03d.png' % (opt.outf, epoch),
                     normalize=True)
 
