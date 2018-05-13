@@ -294,7 +294,12 @@ for epoch in range(opt.niter):
         optimizerG.step()        
 
         # get value: Tensor.item(), Variable.data[0]
-
+        print(D_loss)
+        print(G_loss)
+        print(Q_loss)
+        print(d_out1)
+        print(d_out2)
+        print(d_out3)
         print('[%d/%d][%d/%d] D_loss: %.4f G_loss: %.4f Q_loss: %.4f prob_real: %.4f prob_fake_before: %.4f prob_fake_after: %.4f'
               % (epoch, opt.niter, i, len(dataloader),
                  D_loss.data[0], G_loss.data[0], Q_loss.data[0], d_out1, d_out2, d_out3))
