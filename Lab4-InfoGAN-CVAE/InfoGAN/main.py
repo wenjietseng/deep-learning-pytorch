@@ -102,8 +102,7 @@ def _noise_sample(batchSize, nz, nc, device=device):
     noise = torch.randn(batchSize, nz - nc, device=device)
     c_tensor = torch.FloatTensor(c).cuda()
     # error combine should be same type, here: FloatTensor + FloatTensor
-    print(noise.size(), c_tensor.size())
-    z = torch.cat([noise, c_tensor], 1).view(-1, nz, 1, 1)
+    z = torch.cat([noise, c_tensor], dim=1).view(-1, nz, 1, 1)
     # print(z.size())
     # z = torch.autograd.Variable(z)
     return z, idx
@@ -120,7 +119,7 @@ fixed_z, _ = _noise_sample(opt.batchSize, nz, nc, device=device)
 for epoch in range(opt.niter):
     for i, data in enumerate(dataloader, 0):
         
-        # Update D network
+        # Update D network: log(D(x)) + log(1-D(G(z)))
         # real part
         optimizerD.zero_grad()
         real_cpu = data[0].to(device)
