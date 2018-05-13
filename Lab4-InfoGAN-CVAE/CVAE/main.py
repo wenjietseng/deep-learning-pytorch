@@ -176,7 +176,7 @@ def test(epoch):
             
             
             recon_batch, mu, logvar = model(new_data, one_hot_lst)
-            test_loss += loss_function(recon_batch, data, mu, logvar).item()
+            test_loss += loss_function(recon_batch.view(-1, 784), data, mu, logvar).item()
             if i == 0:
                 n = min(data.size(0), 8)
                 comparison = torch.cat([data[:n],
