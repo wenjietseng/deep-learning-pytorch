@@ -307,9 +307,9 @@ for epoch in range(opt.niter):
                  D_loss.data[0], G_loss.data[0], Q_loss.data[0], probs_real.data[0],
                  probs_fake_before_G.data[0], probs_fake_after_G.data[0]])
             
-            vutils.save_image(real_cpu,
-                    '%s/real_samples.png' % opt.outf,
-                    normalize=True)
+            # vutils.save_image(real_cpu,
+            #         '%s/real_samples.png' % opt.outf,
+            #         normalize=True)
 
             fake = netG(fixed_z)
             vutils.save_image(fake.detach(),
