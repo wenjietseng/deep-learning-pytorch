@@ -136,7 +136,8 @@ def train(epoch):
             one_hot[idx.item()] = 1.0
             one_hot_lst.append(one_hot)
         
-        one_hot_tensor = torch.Tensor(one_hot_lst)
+        one_hot_tensor = torch.Tensor(one_hot_lst).view(-1, -1, 1, 1)
+        print(one_hot_tensor.size())
         one_hot_tensor = one_hot_tensor.expand(-1, -1, 28, 28)
         new_data = torch.cat((data, one_hot_tensor), dim=1)
         print(new_data.size())
