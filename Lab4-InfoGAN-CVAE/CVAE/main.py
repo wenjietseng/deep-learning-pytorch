@@ -77,6 +77,9 @@ class CVAE(nn.Module):
         self.fc4 = nn.Linear(400, 784)
 
     def encode(self, x):
+        # append 10 D one hot encode to each pixel
+        print(x.size())
+
         out = self.conv1(x)
         out = self.fc1(out)
         return self.fc21(out), self.fc22(out)
@@ -103,21 +106,21 @@ class CVAE(nn.Module):
         return self.decode(z), mu, logvar
 
 
-model = VAE().to(device)
+model = CVAE().to(device)
 optimizer = optim.Adam(model.parameters(), lr=1e-3)
 
 
 # Reconstruction + KL divergence losses summed over all elements and batch
 def loss_function(recon_x, x, mu, logvar):
-    BCE = F.binary_cross_entropy(recon_x, x.view(-1, 784), size_average=False)
-
+    # BCE = F.binary_cross_entropy(recon_x, x.view(-1, 784), size_average=False)
+    MSE = F.mse_loss(recon_x, x.view(-1, 784), size_average=False)
     # see Appendix B from VAE paper:
     # Kingma and Welling. Auto-Encoding Variational Bayes. ICLR, 2014
     # https://arxiv.org/abs/1312.6114
     # 0.5 * sum(1 + log(sigma^2) - mu^2 - sigma^2)
     KLD = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp())
 
-    return BCE + KLD
+    return MSE + KLD
 
 
 def train(epoch):
