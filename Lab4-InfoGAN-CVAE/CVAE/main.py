@@ -96,9 +96,9 @@ class CVAE(nn.Module):
         return out
 
     def forward(self, x, c):
-        mu, logvar = self.encode(x.view(-1, 11, 28, 28))
-        print(mu.mean().item())
-        print(logvar.mean().item())
+        mu, logvar = self.encode(x)#.view(-1, 11, 28, 28))
+        # print(mu.mean().item())
+        # print(logvar.mean().item())
         z = self.reparameterize(mu, logvar)
         c = torch.Tensor(c).cuda()
         # print(c.size())
@@ -153,6 +153,7 @@ def train(epoch):
 
         optimizer.zero_grad()
         recon_batch, mu, logvar = model(new_data, one_hot_lst)
+        print(mu, logvar)
         loss = loss_function(recon_batch.view(-1, 784), data, mu, logvar)
         loss.backward()
         train_loss += loss.item()
