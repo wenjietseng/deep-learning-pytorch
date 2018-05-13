@@ -37,7 +37,7 @@ train_loader = torch.utils.data.DataLoader(
                    ])),
     batch_size=args.batch_size, shuffle=True, **kwargs)
 test_loader = torch.utils.data.DataLoader(
-    datasets.MNIST('~/data', train=False,                          
+    datasets.MNIST('~/Data', train=False,                          
                    transform=transforms.Compose([
                             transforms.ToTensor(),
                             transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
@@ -45,19 +45,41 @@ test_loader = torch.utils.data.DataLoader(
     batch_size=args.batch_size, shuffle=True, **kwargs)
 
 
-class VAE(nn.Module):
+class CVAE(nn.Module):
     def __init__(self):
-        super(VAE, self).__init__()
+        super(CVAE, self).__init__()
 
-        self.fc1 = nn.Linear(784, 400)
-        self.fc21 = nn.Linear(400, 20)
-        self.fc22 = nn.Linear(400, 20)
-        self.fc3 = nn.Linear(20, 400)
+        self.conv1 = nn.Sequential(
+            nn.Conv2d(11, 3, 3, 1, 1),
+            nn.ReLU(),
+            nn.Conv2d(3, 1, 3, 1, 1),
+            nn.ReLU()
+        )
+
+        self.fc1 = nn.Sequential(
+            nn.Linear(784, 400, bias=True),
+            nn.ReLU()
+        )
+        self.fc21 = nn.Linear(400, 20, bias=True)
+        self.fc22 = nn.Linear(400, 20, bias=True)
+        self.fc3 = nn.Sequential(
+            nn.Linear(30, 392, bias=True),
+            nn.ReLU()
+        )
+        self.conv2 = nn.Sequential(
+            nn.Conv2d(2, 11, 3, 1, 1),
+            nn.ReLU(),
+            nn.UpsamplingNearest2d(scale_factor=2),
+            nn.Conv2d(11, 3, 3, 1, 1),
+            nn.ReLU(),
+            nn.Sigmoid()
+        )
         self.fc4 = nn.Linear(400, 784)
 
     def encode(self, x):
-        h1 = F.relu(self.fc1(x))
-        return self.fc21(h1), self.fc22(h1)
+        out = self.conv1(x)
+        out = self.fc1(out)
+        return self.fc21(out), self.fc22(out)
 
     def reparameterize(self, mu, logvar):
         if self.training:
@@ -72,6 +94,10 @@ class VAE(nn.Module):
         return F.sigmoid(self.fc4(h3))
 
     def forward(self, x):
+
+        # mu_enc = self.fc1(out) # calculate mean in dim: ?
+        # log_var_enc = self.fc2(out) # calculate log_var in dim: ?
+
         mu, logvar = self.encode(x.view(-1, 784))
         z = self.reparameterize(mu, logvar)
         return self.decode(z), mu, logvar
