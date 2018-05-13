@@ -100,7 +100,7 @@ class CVAE(nn.Module):
         c = torch.Tensor(c).cuda()
         # print(c.size())
         # print(z.size())
-        new_z = tensor.cat((z, c), dim=1)
+        new_z = torch.cat((z, c), dim=1)
         return self.decode(new_z), mu, logvar
 
 
