@@ -154,7 +154,8 @@ for epoch in range(opt.niter):
         z, idx = _noise_sample(batch_size, nz, nc, device=device)
         fake_x = netG(z)
         label.fill_(fake_label)
-        d_out2, q_out2 = netD(fake_x.detach()) # d_out2 is probs_fake
+        fe_out2 = netFE(fake_x.detach())
+        d_out2 = netD(fe_out2) # d_out2 is probs_fake
         errD_fake = d_criterion(d_out2, label)
         errD_fake.backward()
         probs_fake_before_G = d_out2.mean().item()
@@ -166,11 +167,17 @@ for epoch in range(opt.niter):
         # G and Q part
         optimizerG.zero_grad()
         label.fill_(real_label)
-        d_out3, q_out3 = netD(fake_x)
+        fe_out3 = netFE(fake_x)
+        d_out3= netD(fe_out3)
         probs_fake_after_G = d_out3.mean().item()
+        
         reconstruct_loss = d_criterion(d_out3, label)
+        
+        q_out3 = netQ(fe_out3)
+   
         target = torch.LongTensor(idx).cuda()
         Q_loss = q_criterion(q_out3, target)
+   
         G_loss = reconstruct_loss + Q_loss
         G_loss.backward()
         optimizerG.step()
