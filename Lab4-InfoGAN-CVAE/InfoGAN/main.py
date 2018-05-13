@@ -271,7 +271,7 @@ for epoch in range(opt.niter):
         z, idx = _noise_sample(dis_c, noise, bs)
         fake_x = netG(z)
         d_out2, q_out2 = netD(fake_x.detach()) # d_out2 is probs_fake
-        probs_fake = d_out2.mean()
+        probs_fake_before_G = d_out2.mean()
         label.data.fill_(0)
         loss_fake = d_criterion(d_out2, label)
         loss_fake.backward()
@@ -283,6 +283,7 @@ for epoch in range(opt.niter):
         optimizerG.zero_grad()
 
         d_out3, q_out3 = netD(fake_x)
+        probs_fake_after_G = d_out3.mean()
         label.data.fill_(1.0)
 
         reconstruct_loss = d_criterion(d_out3, label)
@@ -296,17 +297,9 @@ for epoch in range(opt.niter):
         optimizerG.step()        
 
         # get value: Tensor.item(), Variable.data[0]
-        print(D_loss)
-        print(G_loss)
-        print(Q_loss)
-        print(d_out1)
-        print(probs_real)
-        print(d_out2)
-        print(probs_fake)
-        print(d_out3)
         print('[%d/%d][%d/%d] D_loss: %.4f G_loss: %.4f Q_loss: %.4f prob_real: %.4f prob_fake_before: %.4f prob_fake_after: %.4f'
               % (epoch, opt.niter, i, len(dataloader),
-                 D_loss.data[0], G_loss.data[0], Q_loss.data[0], d_out1, d_out2, d_out3))
+                 D_loss.data[0], G_loss.data[0], Q_loss.data[0], probs_real.data[0], probs_fake_before_G.data[0], probs_fake_after_G.data[0]))
         if i % 100 == 0:
             loss_writer.writerow([epoch, opt.niter, i, len(dataloader),
                  D_loss.item(), G_loss.item(), Q_loss.item(), d_out1, d_out2, d_out3])
