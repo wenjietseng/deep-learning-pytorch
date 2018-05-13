@@ -77,9 +77,6 @@ class CVAE(nn.Module):
         self.fc4 = nn.Linear(400, 784)
 
     def encode(self, x):
-        # append 10 D one hot encode to each pixel
-        print(x.size())
-
         out = self.conv1(x)
         out = self.fc1(out)
         return self.fc21(out), self.fc22(out)
@@ -92,17 +89,17 @@ class CVAE(nn.Module):
         else:
             return mu
 
-    def decode(self, z):
+    def decode(self, z, c):
         h3 = F.relu(self.fc3(z))
         return F.sigmoid(self.fc4(h3))
 
-    def forward(self, x):
-
-        # mu_enc = self.fc1(out) # calculate mean in dim: ?
-        # log_var_enc = self.fc2(out) # calculate log_var in dim: ?
-
+    def forward(self, x, c):
         mu, logvar = self.encode(x.view(-1, 784))
         z = self.reparameterize(mu, logvar)
+        
+        c = torch.Tensor(c).cuda()
+        print(c.size())
+        print(z.size())
         return self.decode(z), mu, logvar
 
 
@@ -136,12 +133,13 @@ def train(epoch):
             one_hot[idx.item()] = 1.0
             one_hot_lst.append(one_hot)
         one_hot_lst = np.asarray(one_hot_lst)
-        one_hot_tensor = torch.Tensor(one_hot_lst).view(-1, 10, 1, 1).cuda()
-        one_hot_tensor = one_hot_tensor.expand(-1, -1, 28, 28)
+        one_hot_tensor = torch.Tensor(one_hot_lst).view(-1, 10, 1, 1).cuda() # batch_size x 10 x 1 x 1
+        one_hot_tensor = one_hot_tensor.expand(-1, -1, 28, 28) # batch_size x 10 x 28 x 28
         new_data = torch.cat((data, one_hot_tensor), dim=1)
-        print(new_data.size())
+        # print(new_data.size()) 128 x 11 x 28 x 28
+
         optimizer.zero_grad()
-        recon_batch, mu, logvar = model(data)
+        recon_batch, mu, logvar = model(new_data, one_hot_lst)
         loss = loss_function(recon_batch, data, mu, logvar)
         loss.backward()
         train_loss += loss.item()
