@@ -129,8 +129,10 @@ def train(epoch):
     for batch_idx, (data, y) in enumerate(train_loader):
         data = data.to(device)
         print(y.size())
-        for idx in y:
-            print(idx)
+        
+        one_hot = np.zeros((y.size(), 10), dtype=float)
+        one_hot[np.arange(y.size()), idx.item()] = 1.0
+        print(one_hot)
         print(data.size())
         optimizer.zero_grad()
         recon_batch, mu, logvar = model(data)
