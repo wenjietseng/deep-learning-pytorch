@@ -128,12 +128,18 @@ def train(epoch):
     train_loss = 0
     for batch_idx, (data, y) in enumerate(train_loader):
         data = data.to(device)
+        
+        # add one-hot to each pixel of img
         one_hot_lst = []
         for idx in y:
             one_hot = np.zeros((10), dtype=float)
             one_hot[idx.item()] = 1.0
             one_hot_lst.append(one_hot)
-        print(one_hot_lst)
+        
+        one_hot_tensor = torch.Tensor(one_hot_lst)
+        print(one_hot_tensor.size())
+        tmp = data.expand(-1, 11, -1, -1)
+        print(temp.size())
         print(data.size())
         optimizer.zero_grad()
         recon_batch, mu, logvar = model(data)
