@@ -205,12 +205,6 @@ d_criterion = nn.BCELoss().cuda()
 q_criterion = nn.CrossEntropyLoss().cuda()
 
 # fixed noise: 54 ~ N(0,1) + 10 one-hot encoder
-c = np.linspace(-1, 1, 10).reshape(1, -1)
-c = np.repeat(c, 10, 0).reshape(-1, 1)
-
-c1 = np.hstack([c, np.zeros_like(c)])
-c2 = np.hstack([np.zeros_like(c), c])
-
 
 # this is for each train, we have to sample noise
 def _noise_sample(dis_c, noise, bs, device=device):
