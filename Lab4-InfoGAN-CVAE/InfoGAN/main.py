@@ -275,7 +275,6 @@ for epoch in range(opt.niter):
         loss_fake.backward()
 
         D_loss = loss_real + loss_fake
-        print(D_loss)
         optimizerD.step()
 
         # G and Q part
@@ -296,7 +295,7 @@ for epoch in range(opt.niter):
 
         print('[%d/%d][%d/%d] D_loss: %.4f G_loss: %.4f Q_loss: %.4f prob_real: %.4f prob_fake_before: %.4f prob_fake_after: %.4f'
               % (epoch, opt.niter, i, len(dataloader),
-                 D_loss.item(), G_loss.item(), Q_loss.item(), d_out1, d_out2, d_out3))
+                 D_loss.data(), G_loss.item(), Q_loss.item(), d_out1, d_out2, d_out3))
         if i % 100 == 0:
             loss_writer.writerow([epoch, opt.niter, i, len(dataloader),
                  D_loss.item(), G_loss.item(), Q_loss.item(), d_out1, d_out2, d_out3])
