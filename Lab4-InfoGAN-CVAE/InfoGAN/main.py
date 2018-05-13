@@ -141,8 +141,9 @@ class Generator(nn.Module):
         if input.is_cuda and self.ngpu > 1:
             output = nn.parallel.data_parallel(self.main, input, range(self.ngpu))
         else:
-            print(input)
-            print(input.size())
+            # print(input)
+            # print(input.size())
+            # error: must be a Variable, so that you can forward
             output = self.main(input)
         return output
 
@@ -192,6 +193,7 @@ class Discriminator(nn.Module):
         else:
             output = self.main(input)
             # print(output.view(64, -1, 1, 1).size())
+            # error resize outpur of discriminator to 64 x 8192 for Linear layer
             d_output = self.discriminator(output)
             
             q_output = self.Q(output.view(64, -1))
@@ -221,6 +223,7 @@ def _noise_sample(dis_c, noise, bs, device=device):
     # dis_c.data.copy_(torch.Tensor(c))
     # print(noise.size())
     # print(dis_c.size())
+    # error combine should be same type, here: FloatTensor + FloatTensor
     z = torch.cat([noise, c], 1).view(-1, 64, 1, 1)
     # print(z.size())
     z = torch.autograd.Variable(z)
@@ -272,6 +275,7 @@ for epoch in range(opt.niter):
         loss_fake.backward()
 
         D_loss = loss_real + loss_fake
+        print(D_loss)
         optimizerD.step()
 
         # G and Q part
