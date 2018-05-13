@@ -1,13 +1,17 @@
 from __future__ import print_function
-
 import torch
 import torch.backends.cudnn as cudnn
 import torchvision.utils as vutils
 from matplotlib import pyplot as plt
-from main import Generator
+from main_code import Generator
+import argparse
 
+parser = argparse.ArgumentParser()
+parser.add_argument('--model', required=True, help='enter path to G model')
+parser.add_argument('--cuda', action='store_true', help='enables cuda')
+opt = parser.parse_args()
 cudnn.benchmark = True
-if torch.cuda.is_available():
+if torch.cuda.is_available() and not opt.cuda:
     print("WARNING: You have a CUDA device, so you should probably run with --cuda")
 device = torch.device("cuda:0" if opt.cuda else "cpu")
 
@@ -20,7 +24,7 @@ batch_size = 64
 
 # load network
 netG = Generator(ngpu).to(device)
-netG.load_state_dict(torch.load('./out_figs/netG_final.pth'))
+netG.load_state_dict(torch.load(opt.model))
 netG.cuda()
 netG.eval()
 
