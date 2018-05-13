@@ -1,10 +1,10 @@
 from __future__ import print_function
 import argparse
 import torch
-from main import Generator
 import torch.backends.cudnn as cudnn
+import torchvision.utils as vutils
 from matplotlib import pyplot as plt
-
+from main import Generator
 parser = argparse.ArgumentParser()
 parser.add_argument('--model', required=True, help='enter path to G model')
 parser.add_argument('--cuda', action='store_true', help='enables cuda')
@@ -38,3 +38,7 @@ c_tensor = torch.cuda.FloatTensor(batch_size, nc).cuda()
 c_tensor.data.copy_(torch.Tensor(c))
 z = torch.cat([noise, c_tensor], 1).view(-1, nz, 1, 1)
 print(z.size())
+
+fake = netG(z)
+vutils.save_image(fake.detach().data, 'eval-out.png',
+    normalize=True)
