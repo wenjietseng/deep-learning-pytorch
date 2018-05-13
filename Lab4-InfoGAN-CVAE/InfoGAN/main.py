@@ -313,7 +313,7 @@ for epoch in range(opt.niter):
 
             fake = netG(fixed_z)
             print(fake)
-            vutils.save_image(fake.detach(),
+            vutils.save_image(tensor.FloatTensor(fake.detach()),
                     '%s/fake_samples_epoch_%03d.png' % (opt.outf, epoch),
                     normalize=True)
 
