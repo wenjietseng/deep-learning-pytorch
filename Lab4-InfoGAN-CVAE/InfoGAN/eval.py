@@ -6,6 +6,7 @@ import torch.backends.cudnn as cudnn
 import torchvision.utils as vutils
 from matplotlib import pyplot as plt
 import argparse
+import numpy as np
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--model', required=True, help='enter path to G model')
