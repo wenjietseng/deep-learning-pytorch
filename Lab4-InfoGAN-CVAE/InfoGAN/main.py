@@ -250,7 +250,7 @@ fixed_z, fixed_idx = _noise_sample(dis_c, noise, 64, device=device)
 
 for epoch in range(opt.niter):
     for i, data in enumerate(dataloader, 0):
-        real_cpu = data[0].to(device)
+        real_cpu = data[0]
         # real part
         optimizerD.zero_grad()
         x, _ = data
