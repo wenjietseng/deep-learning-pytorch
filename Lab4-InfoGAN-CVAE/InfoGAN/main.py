@@ -192,7 +192,7 @@ class Discriminator(nn.Module):
             # print(output.view(64, -1, 1, 1).size())
             d_output = self.discriminator(output)
             
-            q_output = self.Q(output.view(64, -1, 1, 1))
+            q_output = self.Q(output.view(64, -1))
 
         return d_output.view(-1, 1).squeeze(1), q_output
 
