@@ -128,10 +128,10 @@ def train(epoch):
     train_loss = 0
     for batch_idx, (data, y) in enumerate(train_loader):
         data = data.to(device)
-        print(y.size())
+        y_size = list(y.size())
         
-        one_hot = np.zeros((y.size(), 10), dtype=float)
-        one_hot[np.arange(y.size()), idx.item()] = 1.0
+        one_hot = np.zeros((y_size, 10), dtype=float)
+        one_hot[np.arange(y_size), list(y)] = 1.0
         print(one_hot)
         print(data.size())
         optimizer.zero_grad()
