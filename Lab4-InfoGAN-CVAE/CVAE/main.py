@@ -130,7 +130,7 @@ def train(epoch):
         data = data.to(device)
         one_hot_lst = []
         for idx in y:
-            one_hot = np.zeros((1, 10), dtype=float)
+            one_hot = np.zeros((10), dtype=float)
             one_hot[idx.item()] = 1.0
             one_hot_lst.append(one_hot)
         print(one_hot_lst)
