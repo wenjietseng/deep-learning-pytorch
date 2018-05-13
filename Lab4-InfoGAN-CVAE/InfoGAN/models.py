@@ -10,7 +10,6 @@ def weights_init(m):
         m.weight.data.normal_(1.0, 0.02)
         m.bias.data.fill_(0)
 
-
 class Generator(nn.Module):
     def __init__(self, ngpu):
         super(Generator, self).__init__()
@@ -47,6 +46,61 @@ class Generator(nn.Module):
             # error: must be a Variable, so that you can forward
             output = self.main(input)
         return output
+
+class FrontEnd(nn.Module):
+    def __init__(self, ngpu):
+        super(FrontEnd, self).__init__()
+        self.ngpu = ngpu
+        self.main = nn.Sequential(
+            # input is (nc) x 64 x 64
+            nn.Conv2d(1, 64, 4, 2, 1, bias=False),
+            nn.LeakyReLU(0.2, inplace=True),
+            # state size. (ndf) x 32 x 32
+            nn.Conv2d(64, 128, 4, 2, 1, bias=False),
+            nn.BatchNorm2d(128),
+            nn.LeakyReLU(0.2, inplace=True),
+            # state size. (ndf*2) x 16 x 16
+            nn.Conv2d(128, 256, 4, 2, 1, bias=False),
+            nn.BatchNorm2d(256),
+            nn.LeakyReLU(0.2, inplace=True),
+            # state size. (ndf*4) x 8 x 8
+            nn.Conv2d(256, 512, 4, 2, 1, bias=False),
+            nn.BatchNorm2d(512),
+            nn.LeakyReLU(0.2, inplace=True),
+            # state size. (ndf*8) x 4 x 4
+        )
+
+    def forward(self, input):
+        if input.is_cuda and self.ngpu > 1:
+            output = nn.parallel.data_parallel(self.main, input, range(self.ngpu))
+        else:
+            output = self.main(input) 
+        return output
+
+class D(nn.Module):
+    def __init__(self, ngpu):
+        super(D, self).__init__()
+        self.ngpu = ngpu
+        self.discriminator = nn.Sequential(
+            nn.Conv2d(512, 1, 4, 1, 0, bias=False),
+            nn.Sigmoid()
+        )
+    def forward(self, input):
+        d_output = self.discriminator(input) 
+        return d_output.view(-1, 1).squeeze(1)
+
+class Q(nn.Module):
+    def __init__(self, ngpu):
+        super(Q, self).__init__()
+        self.ngpu = ngpu
+        self.Q = nn.Sequential(
+            nn.Linear(in_features=8192, out_features=100, bias=True),
+            nn.ReLU(),
+            nn.Linear(in_features=100, out_features=10, bias=True)
+        )
+
+    def forward(self, input):
+        return self.Q(input.view(-1, 8192))
 
 
 class Discriminator(nn.Module):

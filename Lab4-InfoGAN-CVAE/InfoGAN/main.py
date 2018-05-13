@@ -31,6 +31,9 @@ parser.add_argument('--cuda', action='store_true', help='enables cuda')
 parser.add_argument('--ngpu', type=int, default=1, help='number of GPUs to use')
 parser.add_argument('--netG', default='', help="path to netG (to continue training)")
 parser.add_argument('--netD', default='', help="path to netD (to continue training)")
+parser.add_argument('--netQ', default='', help="path to netQ (to continue training)")
+parser.add_argument('--netFE', default='', help="path to netFE (to continue training)")
+
 parser.add_argument('--outf', default='.', help='folder to output images and model checkpoints')
 parser.add_argument('--manualSeed', type=int, help='manual seed')
 
@@ -76,20 +79,30 @@ nc = 10
 # write loss
 loss_writer = csv.writer(open("./loss_and_probs.csv", 'w'))
 
+# declare models
 netG = Generator(ngpu).to(device)
 netG.apply(weights_init)
 if opt.netG != '':
     netG.load_state_dict(torch.load(opt.netG))
 print(netG)
 
-netD = Discriminator(ngpu).to(device)
+netFE = FrontEnd(ngpu).to(device)
+netFE.apply(weights_init)
+if opt.netFE != '':
+    netFE.load_state_dict(torch.load(opt.netFE))
+print(netFE)
+
+netD = D(ngpu).to(device)
 netD.apply(weights_init)
 if opt.netD != '':
     netD.load_state_dict(torch.load(opt.netD))
 print(netD)
 
-d_criterion = nn.BCELoss().cuda()
-q_criterion = nn.CrossEntropyLoss().cuda()
+netQ = Q(ngpu).to(device)
+netQ.apply(weights_init)
+if opt.netQ != '':
+    netQ.load_state_dict(torch.load(opt.netQ))
+print(netQ)
 
 # fixed noise: 54 ~ N(0,1) + 10 one-hot encoder
 # this is for each train, we have to sample noise
@@ -110,10 +123,15 @@ def _noise_sample(batchSize, nz, nc, device=device):
 real_label = 1
 fake_label = 0
 
-# setup optimizer
-optimizerD = optim.Adam(netD.parameters(), lr=opt.lr, betas=(opt.beta1, 0.999))
-optimizerG = optim.Adam(netG.parameters(), lr=1e-3, betas=(opt.beta1, 0.999))
+# loss function
+d_criterion = nn.BCELoss().cuda()
+q_criterion = nn.CrossEntropyLoss().cuda()
 
+# setup optimizer
+optimizerD = optim.Adam([{'params':netFE.parameters()}, {'params':netD.parameters()}], lr=opt.lr, betas=(opt.beta1, 0.999))
+optimizerG = optim.Adam([{'params':netG.parameters()}, {'params':netQ.parameters()}], lr=1e-3, betas=(opt.beta1, 0.999))
+
+# fixed noise
 fixed_z, _ = _noise_sample(opt.batchSize, nz, nc, device=device)
 
 for epoch in range(opt.niter):
@@ -126,7 +144,8 @@ for epoch in range(opt.niter):
         batch_size = real_cpu.size(0)
         label = torch.full((batch_size,), real_label, device=device)
 
-        d_out1, q_out1 = netD(real_cpu)
+        fe_out1 = netFE(real_cpu)
+        d_out1 = netD(fe_out1)
         errD_real = d_criterion(d_out1, label)
         errD_real.backward()
         probs_real = d_out1.mean().item()
