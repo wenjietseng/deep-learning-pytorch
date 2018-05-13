@@ -13,6 +13,7 @@ import torchvision.transforms as transforms
 import torchvision.utils as vutils
 import csv
 import numpy as np
+from models import *
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--dataset', required=True, help='MNIST | cifar10 | lsun | imagenet | folder | lfw | fake')
@@ -52,41 +53,16 @@ cudnn.benchmark = True
 if torch.cuda.is_available() and not opt.cuda:
     print("WARNING: You have a CUDA device, so you should probably run with --cuda")
 
-if opt.dataset in ['imagenet', 'folder', 'lfw']:
-    # folder dataset
-    dataset = dset.ImageFolder(root=opt.dataroot,
-                               transform=transforms.Compose([
-                                   transforms.Resize(opt.imageSize),
-                                   transforms.CenterCrop(opt.imageSize),
-                                   transforms.ToTensor(),
-                                   transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
-                               ]))
-elif opt.dataset == 'lsun':
-    dataset = dset.LSUN(root=opt.dataroot, classes=['bedroom_train'],
-                        transform=transforms.Compose([
-                            transforms.Resize(opt.imageSize),
-                            transforms.CenterCrop(opt.imageSize),
-                            transforms.ToTensor(),
-                            transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
-                        ]))
-elif opt.dataset == 'cifar10':
-    dataset = dset.CIFAR10(root=opt.dataroot, download=True,
-                           transform=transforms.Compose([
-                               transforms.Resize(opt.imageSize),
-                               transforms.ToTensor(),
-                               transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
-                           ]))
-elif opt.dataset == 'fake':
-    dataset = dset.FakeData(image_size=(3, opt.imageSize, opt.imageSize),
-                            transform=transforms.ToTensor())
-elif opt.dataset == 'MNIST':
+if opt.dataset == 'MNIST':
     dataset = dset.MNIST(root=opt.dataroot,
                          transform=transforms.Compose([
                             transforms.Resize(opt.imageSize),
-                            transforms.ToTensor(),
-                            transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
+                            transforms.ToTensor()
                          ]))
+else:
+    print("currently for MNIST only")
 assert dataset
+
 dataloader = torch.utils.data.DataLoader(dataset, batch_size=opt.batchSize,
                                          shuffle=True, num_workers=int(opt.workers))
 
@@ -100,107 +76,11 @@ nc = 10
 # write loss
 loss_writer = csv.writer(open("./loss_and_probs.csv", 'w'))
 
-# custom weights initialization called on netG and netD
-def weights_init(m):
-    classname = m.__class__.__name__
-    if classname.find('Conv') != -1:
-        m.weight.data.normal_(0.0, 0.02)
-    elif classname.find('BatchNorm') != -1:
-        m.weight.data.normal_(1.0, 0.02)
-        m.bias.data.fill_(0)
-
-
-class Generator(nn.Module):
-    def __init__(self, ngpu):
-        super(Generator, self).__init__()
-        self.ngpu = ngpu
-        self.main = nn.Sequential(
-            # input is Z, going into a convolution
-            nn.ConvTranspose2d(nz, ngf*8, 4, 1, 0, bias=False),
-            nn.BatchNorm2d(ngf*8),
-            nn.ReLU(True),
-            # state size. (ngf*8) x 4 x 4
-            nn.ConvTranspose2d(ngf*8, ngf*4, 4, 2, 1, bias=False),
-            nn.BatchNorm2d(ngf*4),
-            nn.ReLU(True),
-            # state size. (ngf*4) x 8 x 8
-            nn.ConvTranspose2d(ngf*4, ngf*2, 4, 2, 1, bias=False),
-            nn.BatchNorm2d(ngf*2),
-            nn.ReLU(True),
-            # state size. (ngf*2) x 16 x 16
-            nn.ConvTranspose2d(ngf*2, ngf, 4, 2, 1, bias=False),
-            nn.BatchNorm2d(ngf),
-            nn.ReLU(True),
-            # state size. (ngf) x 32 x 32
-            nn.ConvTranspose2d(ngf, 1, 4, 2, 1, bias=False),
-            nn.Tanh()
-            # state size. (nc) x 64 x 64
-        )
-
-    def forward(self, input):
-        if input.is_cuda and self.ngpu > 1:
-            output = nn.parallel.data_parallel(self.main, input, range(self.ngpu))
-        else:
-            # print(input)
-            # print(input.size())
-            # error: must be a Variable, so that you can forward
-            output = self.main(input)
-        return output
-
-
 netG = Generator(ngpu).to(device)
 netG.apply(weights_init)
 if opt.netG != '':
     netG.load_state_dict(torch.load(opt.netG))
 print(netG)
-
-
-class Discriminator(nn.Module):
-    def __init__(self, ngpu):
-        super(Discriminator, self).__init__()
-        self.ngpu = ngpu
-        self.main = nn.Sequential(
-            # input is (nc) x 64 x 64
-            nn.Conv2d(1, ndf, 4, 2, 1, bias=False),
-            nn.LeakyReLU(0.2, inplace=True),
-            # state size. (ndf) x 32 x 32
-            nn.Conv2d(ndf, ndf*2, 4, 2, 1, bias=False),
-            nn.BatchNorm2d(ndf*2),
-            nn.LeakyReLU(0.2, inplace=True),
-            # state size. (ndf*2) x 16 x 16
-            nn.Conv2d(ndf*2, ndf*4, 4, 2, 1, bias=False),
-            nn.BatchNorm2d(ndf*4),
-            nn.LeakyReLU(0.2, inplace=True),
-            # state size. (ndf*4) x 8 x 8
-            nn.Conv2d(ndf*4, ndf*8, 4, 2, 1, bias=False),
-            nn.BatchNorm2d(ndf*8),
-            nn.LeakyReLU(0.2, inplace=True),
-            # state size. (ndf*8) x 4 x 4
-        )
-        self.discriminator = nn.Sequential(
-            nn.Conv2d(ndf*8, 1, 4, 1, 0, bias=False),
-            nn.Sigmoid()
-        )
-        self.Q = nn.Sequential(
-            nn.Linear(in_features=8192, out_features=100, bias=True),
-            nn.ReLU(),
-            nn.Linear(in_features=100, out_features=10, bias=True)
-        )
-
-    def forward(self, input):
-        if input.is_cuda and self.ngpu > 1:
-            output = nn.parallel.data_parallel(self.main, input, range(self.ngpu))
-        else:
-            # print(input.size())
-            output = self.main(input)
-            # print(output.view(64, -1, 1, 1).size())
-            # error resize outpur of discriminator to 64 x 8192 for Linear layer
-            d_output = self.discriminator(output)
-            
-            q_output = self.Q(output.view(-1, 8192))
-
-        return d_output.view(-1, 1).squeeze(1), q_output
-
 
 netD = Discriminator(ngpu).to(device)
 netD.apply(weights_init)
@@ -212,7 +92,6 @@ d_criterion = nn.BCELoss().cuda()
 q_criterion = nn.CrossEntropyLoss().cuda()
 
 # fixed noise: 54 ~ N(0,1) + 10 one-hot encoder
-
 # this is for each train, we have to sample noise
 def _noise_sample(batchSize, nz, nc, device=device):
     idx = np.random.randint(nc, size=batchSize)
@@ -234,16 +113,6 @@ fake_label = 0
 # setup optimizer
 optimizerD = optim.Adam(netD.parameters(), lr=opt.lr, betas=(opt.beta1, 0.999))
 optimizerG = optim.Adam(netG.parameters(), lr=1e-3, betas=(opt.beta1, 0.999))
-
-# real_x = torch.cuda.FloatTensor(opt.batchSize, 1, opt.imageSize, opt.imageSize).cuda()
-# label = torch.cuda.FloatTensor(opt.batchSize).cuda()
-# dis_c = torch.cuda.FloatTensor(opt.batchSize, 10).cuda()
-# noise = torch.cuda.FloatTensor(opt.batchSize, 54).cuda()
-
-# real_x = torch.autograd.Variable(real_x)
-# label = torch.autograd.Variable(label)
-# dis_c = torch.autograd.Variable(dis_c)
-# noise = torch.autograd.Variable(noise)
 
 fixed_z, _ = _noise_sample(opt.batchSize, nz, nc, device=device)
 
