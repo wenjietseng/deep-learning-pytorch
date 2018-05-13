@@ -268,7 +268,7 @@ for epoch in range(opt.niter):
         label.fill_(fake_label)
         d_out2, q_out2 = netD(fake_x.detach()) # d_out2 is probs_fake
         errD_fake = d_criterion(d_out2, label)
-        errD_fake.backward
+        errD_fake.backward()
         probs_fake_before_G = d_out2.mean().item()
 
         D_loss = errD_real + errD_fake
