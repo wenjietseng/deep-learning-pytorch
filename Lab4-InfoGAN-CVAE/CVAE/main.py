@@ -94,7 +94,7 @@ class CVAE(nn.Module):
         return F.sigmoid(self.fc4(h3))
 
     def forward(self, x, c):
-        mu, logvar = self.encode(x.view(-1, 784))
+        mu, logvar = self.encode(x.view(-1, 11, 28, 28))
         z = self.reparameterize(mu, logvar)
         
         c = torch.Tensor(c).cuda()
