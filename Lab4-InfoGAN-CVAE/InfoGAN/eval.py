@@ -1,5 +1,7 @@
 from __future__ import print_function
 import torch
+import torch.nn as nn
+import torch.nn.parallel
 import torch.backends.cudnn as cudnn
 import torchvision.utils as vutils
 from matplotlib import pyplot as plt
