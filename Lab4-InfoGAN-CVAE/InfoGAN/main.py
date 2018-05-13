@@ -95,7 +95,7 @@ ngpu = int(opt.ngpu)
 nz = int(opt.nz)
 ngf = int(opt.ngf)
 ndf = int(opt.ndf)
-nc = 1
+nc = 10
 
 # write loss
 loss_writer = csv.writer(open("./loss_and_probs.csv", 'w'))
@@ -132,7 +132,7 @@ class Generator(nn.Module):
             nn.BatchNorm2d(ngf),
             nn.ReLU(True),
             # state size. (ngf) x 32 x 32
-            nn.ConvTranspose2d(ngf, nc, 4, 2, 1, bias=False),
+            nn.ConvTranspose2d(ngf, 1, 4, 2, 1, bias=False),
             nn.Tanh()
             # state size. (nc) x 64 x 64
         )
@@ -196,7 +196,7 @@ class Discriminator(nn.Module):
             # error resize outpur of discriminator to 64 x 8192 for Linear layer
             d_output = self.discriminator(output)
             
-            q_output = self.Q(output.view(64, -1))
+            q_output = self.Q(output.view(-1, 8192))
 
         return d_output.view(-1, 1).squeeze(1), q_output
 
@@ -213,20 +213,18 @@ q_criterion = nn.CrossEntropyLoss().cuda()
 # fixed noise: 54 ~ N(0,1) + 10 one-hot encoder
 
 # this is for each train, we have to sample noise
-def _noise_sample(dis_c, noise, bs, device=device):
+def _noise_sample(batchSize, nz, nc, device=device):
+    idx = np.random.randint(nc, size=batchSize)
+    c = np.zeros((batchSize, nc))
+    c[range(batchSize), idx] = 1.0
 
-    noise = torch.randn(64, 54).cuda()
-    idx = np.random.randint(10, size=bs)
-    c = np.zeros((bs, 10))
-    c[range(bs), idx] = 1.0
-    c = torch.cuda.FloatTensor(c)
-    # dis_c.data.copy_(torch.Tensor(c))
-    # print(noise.size())
-    # print(dis_c.size())
+    noise = torch.randn(batchSize, nz - nc, device=device)
+    c_tensor = torch.cuda.FloatTensor(batchSize, nc).cuda()
     # error combine should be same type, here: FloatTensor + FloatTensor
-    z = torch.cat([noise, c], 1).view(-1, 64, 1, 1)
+    c_tensor.data.copy_(torch.Tensor(c))
+    z = torch.cat([noise, c_tensor], 1).view(-1, nz, 1, 1)
     # print(z.size())
-    z = torch.autograd.Variable(z)
+    # z = torch.autograd.Variable(z)
     return z, idx
 
 real_label = 1
@@ -236,76 +234,67 @@ fake_label = 0
 optimizerD = optim.Adam(netD.parameters(), lr=opt.lr, betas=(opt.beta1, 0.999))
 optimizerG = optim.Adam(netG.parameters(), lr=1e-3, betas=(opt.beta1, 0.999))
 
-real_x = torch.cuda.FloatTensor(opt.batchSize, 1, opt.imageSize, opt.imageSize).cuda()
-label = torch.cuda.FloatTensor(opt.batchSize).cuda()
-dis_c = torch.cuda.FloatTensor(opt.batchSize, 10).cuda()
-noise = torch.cuda.FloatTensor(opt.batchSize, 54).cuda()
+# real_x = torch.cuda.FloatTensor(opt.batchSize, 1, opt.imageSize, opt.imageSize).cuda()
+# label = torch.cuda.FloatTensor(opt.batchSize).cuda()
+# dis_c = torch.cuda.FloatTensor(opt.batchSize, 10).cuda()
+# noise = torch.cuda.FloatTensor(opt.batchSize, 54).cuda()
 
-real_x = torch.autograd.Variable(real_x)
-label = torch.autograd.Variable(label)
-dis_c = torch.autograd.Variable(dis_c)
-noise = torch.autograd.Variable(noise)
+# real_x = torch.autograd.Variable(real_x)
+# label = torch.autograd.Variable(label)
+# dis_c = torch.autograd.Variable(dis_c)
+# noise = torch.autograd.Variable(noise)
 
-fixed_z, fixed_idx = _noise_sample(dis_c, noise, 64, device=device)
+fixed_z, _ = _noise_sample(opt.batchSize, nz, nc, device=device)
 
 for epoch in range(opt.niter):
     for i, data in enumerate(dataloader, 0):
-        real_cpu = data[0]
+        
+        # Update D network
         # real part
         optimizerD.zero_grad()
-        x, _ = data
+        real_cpu = data[0].to(device)
+        batch_size = real_cpu.size(0)
+        label = torch.full((batch_size,), real_label, device=device)
 
-        bs = x.size(0)
-        real_x.data.resize_(x.size())
-        label.data.resize_(bs)
-        dis_c.data.resize_(bs, 10)
-        noise.data.resize_(bs, 54)
-        
-        real_x.data.copy_(x)
-        d_out1, q_out1 = netD(real_x) # d_out1 is probs_real
-        probs_real = d_out1.mean()
-        label.data.fill_(1)
-        loss_real = d_criterion(d_out1, label)
-        loss_real.backward()
+        d_out1, q_out1 = netD(real_cpu)
+        errD_real = d_criterion(d_out1, label)
+        errD_real.backward()
+        probs_real = d_out1.mean().item()
 
         # fake part
-        z, idx = _noise_sample(dis_c, noise, bs)
+        z, idx = _noise_sample(batch_size, nz, nc, device=device)
         fake_x = netG(z)
+        label.fill_(fake_label)
         d_out2, q_out2 = netD(fake_x.detach()) # d_out2 is probs_fake
-        probs_fake_before_G = d_out2.mean()
-        label.data.fill_(0)
-        loss_fake = d_criterion(d_out2, label)
-        loss_fake.backward()
+        errD_fake = d_criterion(d_out2, label)
+        errD_fake.backward
+        probs_fake_before_G = d_out2.mean().item()
 
-        D_loss = loss_real + loss_fake
+        D_loss = errD_real + errD_fake
         optimizerD.step()
 
+        # Update G network
         # G and Q part
         optimizerG.zero_grad()
-
+        label.fill_(real_label)
         d_out3, q_out3 = netD(fake_x)
-        probs_fake_after_G = d_out3.mean()
-        label.data.fill_(1.0)
-
+        probs_fake_after_G = d_out3.mean().item()
         reconstruct_loss = d_criterion(d_out3, label)
-        
-        class_ = torch.LongTensor(idx).cuda()
-        target = torch.autograd.Variable(class_)
+        target = torch.LongTensor(idx).cuda()
         Q_loss = q_criterion(q_out3, target)
-        
         G_loss = reconstruct_loss + Q_loss
         G_loss.backward()
-        optimizerG.step()        
+        optimizerG.step()
 
         # get value: Tensor.item(), Variable.data[0]
         print('[%d/%d][%d/%d] D_loss: %.4f G_loss: %.4f Q_loss: %.4f prob_real: %.4f prob_fake_before: %.4f prob_fake_after: %.4f'
               % (epoch, opt.niter, i, len(dataloader),
-                 D_loss.data[0], G_loss.data[0], Q_loss.data[0], probs_real.data[0],
-                 probs_fake_before_G.data[0], probs_fake_after_G.data[0]))
+                 D_loss.item(), G_loss.item(), Q_loss.item(), probs_real,
+                 probs_fake_before_G, probs_fake_after_G))
         if i % 100 == 0:
             loss_writer.writerow([epoch, opt.niter, i, len(dataloader),
-                 D_loss.data[0], G_loss.data[0], Q_loss.data[0], probs_real.data[0],
-                 probs_fake_before_G.data[0], probs_fake_after_G.data[0]])
+                 D_loss.item(), G_loss.item(), Q_loss.item(), probs_real,
+                 probs_fake_before_G, probs_fake_after_G])
             
             vutils.save_image(real_cpu,
                     '%s/real_samples.png' % opt.outf,
