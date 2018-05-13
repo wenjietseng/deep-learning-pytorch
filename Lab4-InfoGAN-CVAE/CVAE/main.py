@@ -139,7 +139,7 @@ def train(epoch):
         one_hot_tensor = torch.Tensor(one_hot_lst)
         print(one_hot_tensor.size())
         tmp = data.expand(-1, 11, -1, -1)
-        print(temp.size())
+        print(tmp.size())
         print(data.size())
         optimizer.zero_grad()
         recon_batch, mu, logvar = model(data)
