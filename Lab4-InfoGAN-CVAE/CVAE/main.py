@@ -139,9 +139,12 @@ def train(epoch):
     train_loss = 0
     for batch_idx, (data, y) in enumerate(train_loader):
         data = data.to(device)
-        
         # add one-hot to each pixel of img
         one_hot_lst = one_hot_handler(y)
+        print("-------------------")
+        print(y)
+        print(one_hot_lst)
+        print("-------------------")
 
         one_hot_tensor = torch.Tensor(one_hot_lst).view(-1, 10, 1, 1).cuda() # batch_size x 10 x 1 x 1
         # print(one_hot_tensor.size())
@@ -153,7 +156,7 @@ def train(epoch):
 
         optimizer.zero_grad()
         recon_batch, mu, logvar = model(new_data, one_hot_lst)
-        print(mu, logvar)
+        print(mu.mean().item(), logvar.mean().item())
         loss = loss_function(recon_batch.view(-1, 784), data, mu, logvar)
         loss.backward()
         train_loss += loss.item()
