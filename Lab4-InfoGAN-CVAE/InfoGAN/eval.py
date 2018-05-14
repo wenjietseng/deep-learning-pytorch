@@ -51,7 +51,7 @@ for k in range(10):
         one_hot_tensor = torch.FloatTensor(np.asarray(one_hot)).cuda()
         z = torch.cat([same_noise, one_hot_tensor], 1).view(10, nz, 1, 1)
         # print(z.size())
-        fake = netG(z)
+        fake = netG(z).cpu()
         # print(fake.size())
         for j in range(10):
             plt.subplot(gs1[img_no])
