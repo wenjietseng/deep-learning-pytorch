@@ -52,13 +52,14 @@ for k in range(10):
         z = torch.cat([same_noise, one_hot_tensor], 1).view(10, nz, 1, 1)
         # print(z.size())
         fake = netG(z).cpu()
+        fake = fake.detach()
         # print(fake.size())
         for j in range(10):
             plt.subplot(gs1[img_no])
             plt.imshow(fake[j].view(64,64).data.numpy(), plt.cm.gray)
             plt.axis('off')
             img_no+=1
-plt.savefig('eval_imgs/eval-info.png', dpi=300)
+plt.savefig('eval_imgs/eval-final.png', dpi=300)
         # vutils.save_image(fake.detach().data, './eval_imgs/eval-out'+ str(k) + '.png',
             # normalize=True)
 
