@@ -13,6 +13,7 @@ from models import CVAE
 import matplotlib
 matplotlib.use('Agg')
 from matplotlib import pyplot as plt
+from matplotlib import gridspec as gridspec
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--model', required=True, help='enter path to saved model')
@@ -28,7 +29,9 @@ model.load_state_dict(torch.load(args.model))
 model.eval()
 
 plt.clf()
-plt.subplots_adjust(wspace=0, hspace=0)
+# plt.subplots_adjust(wspace=0, hspace=0)
+gs1 = gridspec.GridSpec(10, 10)
+gs1.update(wspace=0.01, hspace=0.01)
 img_no = 1
 for k in range(10):
     with torch.no_grad():
