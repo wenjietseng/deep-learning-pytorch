@@ -44,9 +44,10 @@ for k in range(10):
         sample = model.decode(sample).cpu()
         for j in range(10):
             plt.subplot(10, 10, img_no)
-            plt.imshow(sample[j].view(28, 28).data.numpy())
+            plt.imshow(sample[j].view(28, 28).data.numpy(), plt.cm.gray)
             plt.axis('off')
             img_no+=1
+plt.tight_layout()
 plt.savefig('eval_results/eval-cvae.png', dpi=300)
         # save_image(sample.view(10, 1, 28, 28),
         #         'eval_results/'+str(k)+'.png')
