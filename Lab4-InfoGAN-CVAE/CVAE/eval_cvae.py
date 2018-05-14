@@ -28,6 +28,7 @@ model.load_state_dict(torch.load(args.model))
 model.eval()
 
 plt.clf()
+plt.subplots_adjust(wspace=0, hspace=0)
 img_no = 1
 for k in range(10):
     with torch.no_grad():
@@ -47,7 +48,6 @@ for k in range(10):
             plt.imshow(sample[j].view(28, 28).data.numpy(), plt.cm.gray)
             plt.axis('off')
             img_no+=1
-plt.tight_layout()
 plt.savefig('eval_results/eval-cvae.png', dpi=300)
         # save_image(sample.view(10, 1, 28, 28),
         #         'eval_results/'+str(k)+'.png')
