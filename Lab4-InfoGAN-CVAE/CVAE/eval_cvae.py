@@ -16,6 +16,8 @@ from matplotlib import pyplot as plt
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--model', required=True, help='enter path to saved model')
+parser.add_argument('--no-cuda', action='store_true', default=False,
+                    help='enables CUDA training')
 args = parser.parse_args()
 args.cuda = not args.no_cuda and torch.cuda.is_available()
 
