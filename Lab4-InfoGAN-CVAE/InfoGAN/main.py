@@ -81,25 +81,25 @@ loss_writer = csv.writer(open("./loss_and_probs.csv", 'w'))
 
 # declare models
 netG = Generator(ngpu).to(device)
-netG.apply(weights_init)
+# netG.apply(weights_init)
 if opt.netG != '':
     netG.load_state_dict(torch.load(opt.netG))
 print(netG)
 
 netFE = FrontEnd(ngpu).to(device)
-netFE.apply(weights_init)
+# netFE.apply(weights_init)
 if opt.netFE != '':
     netFE.load_state_dict(torch.load(opt.netFE))
 print(netFE)
 
 netD = D(ngpu).to(device)
-netD.apply(weights_init)
+# netD.apply(weights_init)
 if opt.netD != '':
     netD.load_state_dict(torch.load(opt.netD))
 print(netD)
 
 netQ = Q(ngpu).to(device)
-netQ.apply(weights_init)
+# netQ.apply(weights_init)
 if opt.netQ != '':
     netQ.load_state_dict(torch.load(opt.netQ))
 print(netQ)
