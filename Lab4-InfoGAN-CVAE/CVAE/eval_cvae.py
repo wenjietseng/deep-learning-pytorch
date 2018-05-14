@@ -27,6 +27,10 @@ model = CVAE().to(device)
 model.load_state_dict(torch.load(args.model))
 model.eval()
 
+
+plt.subplot()
+plt.axis('off')
+img_no = 1
 for k in range(10):
     with torch.no_grad():
         # same_noise = torch.randn(10, 20).to(device)
@@ -40,10 +44,12 @@ for k in range(10):
         one_hot_tensor = torch.FloatTensor(np.asarray(one_hot)).cuda()
         sample = torch.cat((same_noise, one_hot_tensor), dim=1)
         sample = model.decode(sample)
-        save_image(sample.view(10, 1, 28, 28),
-                'eval_results/'+str(k)+'.png')
+        for j in range(10):
+            plt.subplot(k, j, img_no)
+            plt.imshow(sample[j])
+            plt.axis('off')
+plt.savefig('eval_results/eval-cvae.png', dpi=300)
+        # save_image(sample.view(10, 1, 28, 28),
+        #         'eval_results/'+str(k)+'.png')
 
-        # sample = torch.randn(100, 20).to(device)
-        # sample = model.decode(sample).cpu()
-        # save_image(sample.view(64, 1, 28, 28),
-                #    'results/sample_' + str(epoch) + '.png')
+        
