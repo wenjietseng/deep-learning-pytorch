@@ -28,7 +28,7 @@ model.load_state_dict(torch.load(args.model))
 model.eval()
 
 
-plt.subplot()
+plt.subplots(10, 10)
 plt.axis('off')
 img_no = 0
 for k in range(10):
