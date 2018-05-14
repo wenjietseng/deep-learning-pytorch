@@ -48,6 +48,7 @@ model = CVAE().to(device)
 print(model)
 optimizer = optim.Adam(model.parameters(), lr=1e-3)
 
+loss_writer = csv.writer(open('./trainging_loss.csv', 'w'))
 
 # Reconstruction + KL divergence losses summed over all elements and batch
 def loss_function(recon_x, x, mu, logvar):
@@ -111,9 +112,16 @@ def train(epoch):
                 epoch, batch_idx * len(data), len(train_loader.dataset),
                 100. * batch_idx / len(train_loader),
                 loss.item() / len(data)))
+            loss_writer.writerow([loss.item() / len(data)])
 
     print('====> Epoch: {} Average loss: {:.4f}'.format(
           epoch, train_loss / len(train_loader.dataset)))
+    # do checkpointing
+    if epoch % 10 == 0:
+        torch.save(model.state_dict(), '%s/model_epoch_%d.pth' % ('out_model', epoch))
+    if epoch == args.epochs:
+        torch.save(model.state_dict(), '%s/model_final.pth' % ('out_model'))
+
 
 
 def test(epoch):
@@ -140,18 +148,3 @@ def test(epoch):
 
     test_loss /= len(test_loader.dataset)
     print('====> Test set loss: {:.4f}'.format(test_loss))
-
-
-for epoch in range(1, args.epochs + 1):
-    train(epoch)
-    test(epoch)
-    # eval
-    # with torch.no_grad():
-    #     sample = torch.randn(64, 20).to(device)
-    #     sample = model.decode(sample).cpu()
-    #     save_image(sample.view(64, 1, 28, 28),
-    #                'results/sample_' + str(epoch) + '.png')
-
-# csv record loss
-# eval
-# save best model
