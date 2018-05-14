@@ -4,7 +4,10 @@ import torch.nn as nn
 import torch.nn.parallel
 import torch.backends.cudnn as cudnn
 import torchvision.utils as vutils
+import matplotlib
+matplotlib.use('Agg')
 from matplotlib import pyplot as plt
+
 import argparse
 import numpy as np
 from models import Generator
@@ -32,18 +35,19 @@ netG.cuda()
 netG.eval()
 
 # generate a z as lab4 desciption
-def new_sample_noise(nz, nc, batch_size, device=device):
-    idx = np.random.randint(nc, size=batch_size)
-    c = np.zeros((batch_size, nc))
-    c[range(batch_size), idx] = 1.0
 
-noise = torch.randn(batch_size, nz - nc, device=device)
-c_tensor = torch.cuda.FloatTensor(batch_size, nc).cuda()
-# error combine should be same type, here: FloatTensor + FloatTensor
-c_tensor.data.copy_(torch.Tensor(c))
-z = torch.cat([noise, c_tensor], 1).view(-1, nz, 1, 1)
-# print(z.size())
+for k in range(10):
+    with torch.no_grad():
+        same_noise = torch.randn(1, 54).to(device)
+        same_noise = same_noise.expand(10, -1)
+        one_hot = []
+        for i in range(10):
+            c = np.zeros(10, dtype=float)
+            c[i] = 1.0
+            one_hot.append(c)
+        one_hot_tensor = torch.FloatTensor(np.asarray(one_hot)).cuda()
+        z = torch.cat([same_noise, one_hot_tensor], 1).view(10, nz, 1, 1)
 
-fake = netG(z)
-vutils.save_image(fake.detach().data, 'eval-out.png',
-    normalize=True)
+        fake = netG(z)
+        vutils.save_image(fake.detach().data, 'eval-out.png',
+            normalize=True)
