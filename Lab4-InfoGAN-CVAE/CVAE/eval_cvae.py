@@ -41,7 +41,7 @@ for k in range(10):
             one_hot.append(c)
         one_hot_tensor = torch.FloatTensor(np.asarray(one_hot)).cuda()
         sample = torch.cat((same_noise, one_hot_tensor), dim=1)
-        sample = model.decode(sample)
+        sample = model.decode(sample).cpu()
         for j in range(10):
             plt.subplot(10, 10, img_no)
             plt.imshow(sample[j].view(28, 28).data.numpy())
