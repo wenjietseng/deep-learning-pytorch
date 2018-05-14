@@ -47,7 +47,8 @@ for k in range(10):
             one_hot.append(c)
         one_hot_tensor = torch.FloatTensor(np.asarray(one_hot)).cuda()
         z = torch.cat([same_noise, one_hot_tensor], 1).view(10, nz, 1, 1)
-
+        print(z.size())
         fake = netG(z)
-        vutils.save_image(fake.detach().data, 'eval-out.png',
+        print(fake.size())
+        vutils.save_image(fake.detach().data, './eval_imgs/eval-out'+ str(k) + '.png',
             normalize=True)
