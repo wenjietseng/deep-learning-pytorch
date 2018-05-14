@@ -32,7 +32,7 @@ plt.clf()
 # plt.subplots_adjust(wspace=0, hspace=0)
 gs1 = gridspec.GridSpec(10, 10)
 gs1.update(wspace=0.01, hspace=0.01)
-img_no = 1
+img_no = 0
 for k in range(10):
     with torch.no_grad():
         # same_noise = torch.randn(10, 20).to(device)
@@ -47,7 +47,7 @@ for k in range(10):
         sample = torch.cat((same_noise, one_hot_tensor), dim=1)
         sample = model.decode(sample).cpu()
         for j in range(10):
-            plt.subplot(10, 10, img_no)
+            plt.subplot(gs[img_no])
             plt.imshow(sample[j].view(28, 28).data.numpy(), plt.cm.gray)
             plt.axis('off')
             img_no+=1
