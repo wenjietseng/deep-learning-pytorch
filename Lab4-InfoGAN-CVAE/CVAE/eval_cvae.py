@@ -45,8 +45,8 @@ for k in range(10):
         sample = torch.cat((same_noise, one_hot_tensor), dim=1)
         sample = model.decode(sample)
         for j in range(10):
-            plt.subplot(k, j, img_no)
-            plt.imshow(sample[j])
+            plt.subplot(k, j, j)
+            plt.imshow(sample[j].view(28, 28).data.numpy())
             plt.axis('off')
             img_no+=1
 plt.savefig('eval_results/eval-cvae.png', dpi=300)
