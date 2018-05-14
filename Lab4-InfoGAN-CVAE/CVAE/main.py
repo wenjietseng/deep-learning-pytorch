@@ -148,3 +148,7 @@ def test(epoch):
 
     test_loss /= len(test_loader.dataset)
     print('====> Test set loss: {:.4f}'.format(test_loss))
+
+for epoch in range(1, args.epochs + 1):
+    train(epoch)
+    test(epoch)
