@@ -30,7 +30,7 @@ model.eval()
 
 plt.subplot()
 plt.axis('off')
-img_no = 1
+img_no = 0
 for k in range(10):
     with torch.no_grad():
         # same_noise = torch.randn(10, 20).to(device)
@@ -48,8 +48,9 @@ for k in range(10):
             plt.subplot(k, j, img_no)
             plt.imshow(sample[j])
             plt.axis('off')
+            img_no+=1
 plt.savefig('eval_results/eval-cvae.png', dpi=300)
         # save_image(sample.view(10, 1, 28, 28),
         #         'eval_results/'+str(k)+'.png')
 
-        
+#python3 eval_cvae.py --model ./out_model/model_final.pth
