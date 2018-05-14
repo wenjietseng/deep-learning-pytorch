@@ -27,9 +27,7 @@ model = CVAE().to(device)
 model.load_state_dict(torch.load(args.model))
 model.eval()
 
-
-plt.subplots(10, 10)
-plt.axis('off')
+plt.clf()
 img_no = 0
 for k in range(10):
     with torch.no_grad():
@@ -45,7 +43,7 @@ for k in range(10):
         sample = torch.cat((same_noise, one_hot_tensor), dim=1)
         sample = model.decode(sample)
         for j in range(10):
-            plt.subplot(k, j, j)
+            plt.subplot(k, j, img_no)
             plt.imshow(sample[j].view(28, 28).data.numpy())
             plt.axis('off')
             img_no+=1
