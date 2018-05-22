@@ -47,7 +47,8 @@ for k in range(10):
         # turn this into given one-hot
         for i in range(10):
             c = np.zeros(10, dtype=float)
-            c[i] = 1.0
+            # c[i] = 1.0
+            c[0] = 1.0
             one_hot.append(c)
         one_hot_tensor = torch.FloatTensor(np.asarray(one_hot)).cuda()
         z = torch.cat([same_noise, one_hot_tensor], 1).view(10, nz, 1, 1)
