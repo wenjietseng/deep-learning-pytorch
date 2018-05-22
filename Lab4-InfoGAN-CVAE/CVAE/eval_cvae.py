@@ -36,23 +36,21 @@ img_no = 0
 for k in range(3): # turn it into 3
     with torch.no_grad():
         # same_noise = torch.randn(10, 20).to(device)
-        same_noise = torch.randn(20).to(device)
-        print(same_noise.size())
+        same_noise = torch.randn(1, 20).to(device)
         # same_noise = same_noise.expand(10, -1) # may need to change :)
         one_hot = []
         # turn it into given number
         c = np.zeros(10, dtype = float)
-        c[1] = 1.0
+        c[0] = 1.0
         one_hot = c
         # for i in range(10): 
             # c = np.zeros(10, dtype=float)
             # c[i] = 1.0
             # one_hot.append(c)
         one_hot_tensor = torch.FloatTensor(np.asarray(one_hot)).cuda()
-        print(one_hot_tensor.size())
-        sample = torch.cat((same_noise, one_hot_tensor))#, dim=1)
+        sample = torch.cat((same_noise, one_hot_tensor.view(1, -1)), dim=1)
         sample = model.decode(sample).cpu()
-        save_image(sample.view(10, 1, 28, 28),
+        save_image(sample.view(1, 1, 28, 28),
                    'eval_results/demo' + str(k) + '.png')
 #         for j in range(10):
 #             plt.subplot(gs1[img_no])
