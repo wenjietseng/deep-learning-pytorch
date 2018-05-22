@@ -42,7 +42,7 @@ img_no = 0
 for k in range(1):
     with torch.no_grad():
         same_noise = torch.randn(1, 54).to(device)
-        same_noise = same_noise.expand(10, -1)
+        same_noise = same_noise.expand(5, -1)
         one_hot = []
         # turn this into given one-hot
         for i in range(5):
