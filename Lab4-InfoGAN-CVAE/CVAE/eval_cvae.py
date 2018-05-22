@@ -41,7 +41,7 @@ for k in range(3): # turn it into 3
         one_hot = []
         # turn it into given number
         c = np.zeros(10, dtype = float)
-        c[0] = 1.0
+        c[1] = 1.0
         one_hot = c
         # for i in range(10): 
             # c = np.zeros(10, dtype=float)
