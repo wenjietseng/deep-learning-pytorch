@@ -36,7 +36,7 @@ img_no = 0
 for k in range(3): # turn it into 3
     with torch.no_grad():
         # same_noise = torch.randn(10, 20).to(device)
-        same_noise = torch.randn(1, 20).to(device)
+        same_noise = torch.randn(20).to(device)
         print(same_noise.size())
         # same_noise = same_noise.expand(10, -1) # may need to change :)
         one_hot = []
@@ -50,7 +50,7 @@ for k in range(3): # turn it into 3
             # one_hot.append(c)
         one_hot_tensor = torch.FloatTensor(np.asarray(one_hot)).cuda()
         print(one_hot_tensor.size())
-        sample = torch.cat((same_noise, one_hot_tensor), dim=1)
+        sample = torch.cat((same_noise, one_hot_tensor))#, dim=1)
         sample = model.decode(sample).cpu()
         save_image(sample.view(10, 1, 28, 28),
                    'eval_results/demo' + str(k) + '.png')
