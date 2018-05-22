@@ -51,7 +51,7 @@ for k in range(1):
             c[1] = 1.0
             one_hot.append(c)
         one_hot_tensor = torch.FloatTensor(np.asarray(one_hot)).cuda()
-        z = torch.cat([same_noise, one_hot_tensor], 1).view(10, nz, 1, 1)
+        z = torch.cat([same_noise, one_hot_tensor], 1).view(5, nz, 1, 1)
         # print(z.size())
         fake = netG(z).cpu()
         fake = fake.detach()
