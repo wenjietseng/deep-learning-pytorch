@@ -39,24 +39,24 @@ plt.clf()
 gs1 = gridspec.GridSpec(10, 10)
 gs1.update(wspace=0.01, hspace=0.01)
 img_no = 0
-for k in range(1):
+for k in range(5):
     with torch.no_grad():
         same_noise = torch.randn(1, 54).to(device)
-        same_noise = same_noise.expand(5, -1)
+        same_noise = same_noise.expand(1, -1)
         one_hot = []
         # turn this into given one-hot
-        for i in range(5):
+        for i in range(1):
             c = np.zeros(10, dtype=float)
             # c[i] = 1.0
             c[1] = 1.0
             one_hot.append(c)
         one_hot_tensor = torch.FloatTensor(np.asarray(one_hot)).cuda()
-        z = torch.cat([same_noise, one_hot_tensor], 1).view(5, nz, 1, 1)
+        z = torch.cat([same_noise, one_hot_tensor], 1).view(1, nz, 1, 1)
         # print(z.size())
         fake = netG(z).cpu()
         fake = fake.detach()
         # print(fake.size())
-        for j in range(5):
+        for j in range(1):
             plt.subplot(gs1[img_no])
             plt.imshow(fake[j].view(64,64).data.numpy(), plt.cm.gray)
             plt.axis('off')
