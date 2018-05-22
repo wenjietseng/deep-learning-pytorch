@@ -33,25 +33,33 @@ plt.clf()
 gs1 = gridspec.GridSpec(10, 10)
 gs1.update(wspace=0.01, hspace=0.01)
 img_no = 0
-for k in range(10):
+for k in range(3): # turn it into 3
     with torch.no_grad():
         # same_noise = torch.randn(10, 20).to(device)
         same_noise = torch.randn(1, 20).to(device)
-        same_noise = same_noise.expand(10, -1)
+        # same_noise = same_noise.expand(10, -1) # may need to change :)
         one_hot = []
-        for i in range(10):
-            c = np.zeros(10, dtype=float)
-            c[i] = 1.0
-            one_hot.append(c)
+        # turn it into given number
+        c = np.zeros(10, dtype = float)
+        c[0] = 1.0
+        one_hot = c
+        # for i in range(10): 
+            # c = np.zeros(10, dtype=float)
+            # c[i] = 1.0
+            # one_hot.append(c)
         one_hot_tensor = torch.FloatTensor(np.asarray(one_hot)).cuda()
         sample = torch.cat((same_noise, one_hot_tensor), dim=1)
         sample = model.decode(sample).cpu()
-        for j in range(10):
-            plt.subplot(gs1[img_no])
-            plt.imshow(sample[j].view(28, 28).data.numpy(), plt.cm.gray)
-            plt.axis('off')
-            img_no+=1
-plt.savefig('eval_results/eval-cvae.png', dpi=300)
+        save_image(sample.view(10, 1, 28, 28),
+                   'eval_results/demo' + str(k) + '.png')
+#         for j in range(10):
+#             plt.subplot(gs1[img_no])
+#             plt.imshow(sample[j].view(28, 28).data.numpy(), plt.cm.gray)
+#             plt.axis('off')
+#             img_no+=1
+# plt.savefig('eval_results/demo.png', dpi=300)
+
+        # use this line to create images
         # save_image(sample.view(10, 1, 28, 28),
         #         'eval_results/'+str(k)+'.png')
 

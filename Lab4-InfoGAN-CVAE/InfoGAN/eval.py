@@ -44,6 +44,7 @@ for k in range(10):
         same_noise = torch.randn(1, 54).to(device)
         same_noise = same_noise.expand(10, -1)
         one_hot = []
+        # turn this into given one-hot
         for i in range(10):
             c = np.zeros(10, dtype=float)
             c[i] = 1.0
@@ -59,7 +60,7 @@ for k in range(10):
             plt.imshow(fake[j].view(64,64).data.numpy(), plt.cm.gray)
             plt.axis('off')
             img_no+=1
-plt.savefig('eval_imgs/eval-final.png', dpi=300)
+plt.savefig('eval_imgs/demo.png', dpi=300)
         # vutils.save_image(fake.detach().data, './eval_imgs/eval-out'+ str(k) + '.png',
             # normalize=True)
 
