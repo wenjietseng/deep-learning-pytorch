@@ -843,9 +843,13 @@ int main(int argc, const char* argv[]) {
 	info << "TDL2048-Demo" << std::endl;
 	learning tdl;
 
+    // csv file for saving rewards for every 1000 episode
+    std::ofstream outfile;
+    outfile.open("after-state.csv");
+
 	// set the learning parameters
 	float alpha = 0.1;
-	size_t total = 100000;
+	size_t total = 10000;
 	unsigned seed;
 	__asm__ __volatile__ ("rdtsc" : "=a" (seed));
 	info << "alpha = " << alpha << std::endl;
@@ -891,11 +895,12 @@ int main(int argc, const char* argv[]) {
 		// update by TD(0)
 		tdl.update_episode(path, alpha);
 		tdl.make_statistic(n, b, score);
+        outfile << score;
 		path.clear();
 	}
 
 	// store the model into file
 	tdl.save("");
-
+    outfile.close();
 	return 0;
 }
