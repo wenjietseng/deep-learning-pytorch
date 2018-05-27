@@ -845,7 +845,7 @@ int main(int argc, const char* argv[]) {
 
     // csv file for saving rewards for every 1000 episode
     std::ofstream outfile;
-    outfile.open("after-state.csv");
+    outfile.open("after-state-2.csv");
 
 	// set the learning parameters
 	float alpha = 0.1;
@@ -900,7 +900,7 @@ int main(int argc, const char* argv[]) {
 	}
 
 	// store the model into file
-	tdl.save("");
+	tdl.save("./trained-models/afterstate.tar");
     outfile.close();
 	return 0;
 }
